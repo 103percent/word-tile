@@ -389,11 +389,14 @@ function checkAnimal(word){
 }
 
 function collectAnimal(animal){
-  collected.push(animal.id);saveCol(collected);
-  pityCounter=PITY_BASE;savePity(pityCounter);pityPenaltyApplied=true;
-  $('collection-btn').style.display='block';
-  let t=$('animal-toast');t.textContent=animal.emoji+' New: '+animal.triggers[0]+'!';
-  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);
+  try{
+    collected.push(animal.id);saveCol(collected);
+    pityCounter=PITY_BASE;savePity(pityCounter);pityPenaltyApplied=true;
+    $('collection-btn').style.display='block';
+    let t=$('animal-toast');
+    t.textContent=(animal.emoji||'?')+' New: '+animal.triggers[0]+'!';
+    t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);
+  }catch(e){console.error('collectAnimal error:',e);}
 }
 
 function openCollection(){
@@ -586,7 +589,7 @@ function completeR(how){
   const wlSnap=wl,mc=lm.filter(v=>!v).length,early=mc>0,bonus=GB+(early?EB*mc:0);
   sc+=bonus;saveBest();updH();
   let animal=checkAnimal(wd);
-  if(animal)collectAnimal(animal);
+  try{if(animal)collectAnimal(animal);}catch(e){console.error('animal collect failed:',e);}
   wh.push({word:wd,how,early,eb:early?EB*mc:0,pity:false,km:[...lm],animal:animal?animal.emoji:null});
   if(!hrnd){hrnd=true;localStorage.setItem('wt_won_round','1');$('rule-progression').style.display='block';}
   if(!h9&&wlSnap===9){h9=true;localStorage.setItem('wt_won_nine','1');$('rule-return').style.display='block';}
