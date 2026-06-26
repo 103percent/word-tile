@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1.0"><title>Word Tile</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#faf8f0;color:#333;min-height:100vh;display:flex;justify-content:center;padding:20px;transition:background .5s,color .5s}
+body.skull{background:#1a1a2e;color:#ccc}
+body.skulls{background:#0d0010;color:#ccc}
+#app{width:100%;max-width:420px;user-select:none}
+h1{font-size:22px;font-weight:700;color:#776e65;margin-bottom:12px;transition:color .5s}
+body.skull h1{color:#a89ec9}
+body.skulls h1{color:#ff6ec7}
+#header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+#scores{display:flex;gap:8px}
+.score-box{background:#bbada0;border-radius:6px;padding:4px 14px;text-align:center;min-width:72px;transition:background .5s}
+body.skull .score-box{background:#2d2b55}
+body.skulls .score-box{background:#3a0040}
+.score-label{font-size:11px;color:#eee4da;text-transform:uppercase;letter-spacing:.05em}
+.score-val{font-size:20px;font-weight:600;color:#fff}
+#header-btns{display:flex;gap:6px;align-items:center}
+#new-btn{padding:6px 14px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:background .5s}
+body.skull #new-btn{background:#4a3f7a}
+body.skulls #new-btn{background:#6a0080}
+#skull-toggle{padding:6px 10px;border:none;border-radius:6px;background:#2d2b55;color:#fff;cursor:pointer;font-size:16px;display:none;transition:background .5s}
+#skull-toggle.active{background:#6a3fa0}
+#skull-toggle.skulls-active{background:#9a00c0;letter-spacing:-2px}
+#wp-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+#word-progress{display:flex;align-items:center;flex-wrap:nowrap;flex:1}
+#collection-btn{padding:6px 10px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:16px;display:none;flex-shrink:0;transition:background .5s}
+body.skull #collection-btn{background:#4a3f7a}
+body.skulls #collection-btn{background:#6a0080}
+.letter-slot{flex:0 0 auto;width:36px;height:40px;border-radius:4px;border:1px solid #bbada0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:#cdc1b4;color:#776e65;transition:background .3s,color .3s,transform .3s;margin-right:5px}
+.letter-slot:last-child{margin-right:0}
+.letter-slot.revealed{background:#B7791F;color:#fff;border-color:#B7791F;transform:scale(1.1)}
+body.skull .letter-slot{background:#2d2b55;border-color:#4a3f7a;color:#a89ec9}
+body.skull .letter-slot.revealed{background:#6a3fa0;border-color:#6a3fa0;color:#fff}
+body.skulls .letter-slot{background:#3a0040;border-color:#6a0080;color:#ff9ef0}
+body.skulls .letter-slot.revealed{background:#9a00c0;border-color:#9a00c0;color:#fff}
+#word-progress.len-7 .letter-slot{width:32px;height:36px;font-size:16px;margin-right:4px}
+#word-progress.len-8 .letter-slot{width:29px;height:34px;font-size:15px;margin-right:4px}
+#word-progress.len-9 .letter-slot{width:27px;height:32px;font-size:14px;margin-right:3px}
+#guess-row{display:flex;gap:8px;align-items:center;margin:10px 0}
+#guess-input{padding:7px 10px;border:1px solid #bbada0;border-radius:6px;font-size:15px;background:#fff;color:#333;width:100%;text-transform:uppercase;letter-spacing:.08em;transition:background .5s,border-color .5s,color .5s}
+body.skull #guess-input{background:#2d2b55;border-color:#4a3f7a;color:#e0d8ff}
+body.skulls #guess-input{background:#3a0040;border-color:#6a0080;color:#ffd0ff}
+#guess-btn{padding:7px 16px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap;transition:background .5s}
+body.skull #guess-btn{background:#4a3f7a}
+body.skulls #guess-btn{background:#6a0080}
+#msg{font-size:12px;color:#a08060;margin-top:4px;min-height:16px}
+#grid-wrap{width:100%;margin-bottom:14px}
+#grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#bbada0;border-radius:10px;padding:8px;transition:background .5s}
+body.skull #grid{background:#2d2b55}
+body.skulls #grid{background:#3a0040}
+.cell{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;background:#cdc1b4;color:#776e65;transition:background .3s}
+body.skull .cell{background:#1e1c3a;color:#7a7a9a}
+body.skulls .cell{background:#1a0020;color:#9a6aaa}
+.cell.v2{background:#eee4da;color:#776e65}.cell.v4{background:#ede0c8;color:#776e65}.cell.v8{background:#f2b179;color:#fff}.cell.v16{background:#f59563;color:#fff}.cell.v32{background:#f67c5f;color:#fff}.cell.v64{background:#f65e3b;color:#fff}.cell.v128{background:#edc22e;color:#fff;font-size:22px}.cell.vhigh{background:#3c3489;color:#fff;font-size:18px}
+.cell.letter{background:#B7791F;color:#fff;font-size:26px;font-weight:800;border-radius:8px}
+.cell.skull{background:#3a1a4a;color:#fff;font-size:26px;border-radius:8px;border:1px solid #6a3fa0}
+.cell.dskull{background:#6a0080;color:#fff;font-size:18px;border-radius:8px;border:2px solid #ff6ec7;letter-spacing:-2px}
+body.skull .cell.v2{background:#2a2745;color:#a89ec9}body.skull .cell.v4{background:#312e5a;color:#a89ec9}body.skull .cell.v8{background:#c4845a;color:#fff}body.skull .cell.v16{background:#b06040;color:#fff}body.skull .cell.v32{background:#a04535;color:#fff}body.skull .cell.v64{background:#903020;color:#fff}body.skull .cell.v128{background:#b09020;color:#fff;font-size:22px}body.skull .cell.vhigh{background:#2a1a6a;color:#fff;font-size:18px}body.skull .cell.letter{background:#6a3fa0;color:#fff}
+body.skulls .cell.v2{background:#2a0030;color:#ff9ef0}body.skulls .cell.v4{background:#3a0045;color:#ff9ef0}body.skulls .cell.v8{background:#c4845a;color:#fff}body.skulls .cell.v16{background:#b06040;color:#fff}body.skulls .cell.v32{background:#a04535;color:#fff}body.skulls .cell.v64{background:#903020;color:#fff}body.skulls .cell.v128{background:#b09020;color:#fff;font-size:22px}body.skulls .cell.vhigh{background:#4a006a;color:#fff;font-size:18px}body.skulls .cell.letter{background:#9a00c0;color:#fff}body.skulls .cell.skull{background:#6a0080;border-color:#ff6ec7}body.skulls .cell.dskull{background:#9a00c0;border-color:#fff}
+@keyframes spawn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes merge{0%{transform:scale(1)}35%{transform:scale(1.25)}65%{transform:scale(0.9)}100%{transform:scale(1)}}
+@keyframes letterReveal{0%{transform:scale(0) rotate(-15deg);opacity:0}55%{transform:scale(1.35) rotate(5deg);opacity:1}78%{transform:scale(0.88) rotate(-2deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes letterClear{0%{transform:scale(1);opacity:1}100%{transform:scale(0);opacity:0}}
+@keyframes skullMerge{0%{transform:scale(1)}30%{transform:scale(1.3) rotate(10deg)}60%{transform:scale(0.8)}100%{transform:scale(0);opacity:0}}
+@keyframes dskullMerge{0%{transform:scale(1)}20%{transform:scale(1.4) rotate(-10deg)}50%{transform:scale(0.7) rotate(10deg)}100%{transform:scale(0);opacity:0}}
+@keyframes skullHop{0%{transform:scale(0) translateY(20px);opacity:0}40%{transform:scale(1.3) translateY(-12px);opacity:1}65%{transform:scale(0.85) translateY(6px)}80%{transform:scale(1.1) translateY(-4px)}100%{transform:scale(1) translateY(0);opacity:1}}
+@keyframes dskullSpawn{0%{transform:scale(0) rotate(-30deg);opacity:0}50%{transform:scale(1.4) rotate(10deg);opacity:1}75%{transform:scale(0.85) rotate(-5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes animalPop{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.3) rotate(5deg);opacity:1}80%{transform:scale(0.9)}100%{transform:scale(1) rotate(0);opacity:1}}
+.cell.anim-spawn{animation:spawn .18s cubic-bezier(.34,1.56,.64,1) forwards}
+.cell.anim-merge{animation:merge .22s cubic-bezier(.34,1.56,.64,1) forwards}
+.cell.anim-letter{animation:letterReveal .38s cubic-bezier(.34,1.56,.64,1) forwards}
+.cell.anim-clear{animation:letterClear .25s ease-in forwards}
+.cell.anim-skull-merge{animation:skullMerge .35s ease-in forwards}
+.cell.anim-dskull-merge{animation:dskullMerge .45s ease-in forwards}
+.cell.anim-skull-hop{animation:skullHop .7s cubic-bezier(.34,1.56,.64,1) forwards}
+.cell.anim-dskull-spawn{animation:dskullSpawn .5s cubic-bezier(.34,1.56,.64,1) forwards}
+#score-popup{position:fixed;pointer-events:none;font-size:18px;font-weight:700;color:#edc22e;text-shadow:0 1px 4px rgba(0,0,0,.2);opacity:0;z-index:50}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-44px)}}
+.float{animation:floatUp .75s ease-out forwards}
+#rules,#rules-skull,#rules-skulls{font-size:13px;color:#8f7a66;line-height:1.7;border-top:1px solid #d4c9be;padding-top:12px;margin-top:4px;transition:color .5s,border-color .5s}
+body.skull #rules-skull{color:#7a7a9a;border-color:#2d2b55}
+body.skulls #rules-skulls{color:#cc80ff;border-color:#3a0040}
+.dbg-btn{padding:5px 10px;border:1px solid #e07;border-radius:5px;background:#fff;color:#e07;cursor:pointer;font-size:12px;font-weight:600}
+.dbg-btn:hover{background:#fdd}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
+#overlay.show{display:flex}
+#modal{background:#faf8f0;border-radius:12px;padding:1.5rem;text-align:center;max-width:340px;width:92%;max-height:90vh;overflow-y:auto;transition:background .5s}
+body.skull #modal{background:#1e1c3a;color:#ccc}
+body.skulls #modal{background:#1a0020;color:#ffd0ff}
+#modal h2{font-size:22px;font-weight:700;margin-bottom:6px;color:#333;transition:color .5s}
+body.skull #modal h2{color:#e0d8ff}
+body.skulls #modal h2{color:#ff6ec7}
+#modal p{font-size:14px;color:#776e65;margin-bottom:1rem;line-height:1.6;transition:color .5s}
+body.skull #modal p,body.skulls #modal p{color:#a89ec9}
+#modal-input{padding:8px 12px;border:1px solid #bbada0;border-radius:6px;font-size:16px;width:100%;margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em;transition:background .5s,border-color .5s,color .5s}
+body.skull #modal-input{background:#2d2b55;border-color:#4a3f7a;color:#e0d8ff}
+body.skulls #modal-input{background:#3a0040;border-color:#6a0080;color:#ffd0ff}
+#modal-btn{padding:8px 24px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:15px;font-weight:600;width:100%;margin-bottom:8px;transition:background .5s}
+body.skull #modal-btn{background:#4a3f7a}
+body.skulls #modal-btn{background:#6a0080}
+#share-btn{padding:8px 24px;border:1px solid #bbada0;border-radius:6px;background:#faf8f0;color:#776e65;cursor:pointer;font-size:14px;font-weight:600;width:100%;margin-bottom:8px;transition:background .5s,border-color .5s,color .5s}
+body.skull #share-btn{background:#1e1c3a;border-color:#4a3f7a;color:#a89ec9}
+body.skulls #share-btn{background:#1a0020;border-color:#6a0080;color:#ff9ef0}
+#share-btn:hover{background:#eee4da}body.skull #share-btn:hover{background:#2d2b55}body.skulls #share-btn:hover{background:#3a0040}
+.word-history{text-align:left;margin:10px 0;border-top:1px solid #d4c9be;padding-top:10px}
+body.skull .word-history,body.skulls .word-history{border-color:#2d2b55}
+.word-history-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;color:#555}
+body.skull .word-history-row,body.skulls .word-history-row{color:#a89ec9}
+.word-history-row .wh-icon{font-size:16px;width:24px;text-align:center}
+.word-history-row .wh-word{font-weight:700;color:#B7791F;letter-spacing:.05em}
+body.skull .word-history-row .wh-word{color:#a060e0}
+body.skulls .word-history-row .wh-word{color:#ff6ec7}
+.word-history-row .wh-tag{font-size:11px;color:#aaa;margin-left:2px}
+#next-reveal{font-size:20px;font-weight:700;color:#B7791F;margin-top:12px;display:none}
+#col-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center}
+#col-overlay.show{display:flex}
+#col-modal{background:#faf8f0;border-radius:12px;padding:1.5rem;max-width:380px;width:92%;max-height:88vh;overflow-y:auto;transition:background .5s}
+body.skull #col-modal{background:#1e1c3a}
+body.skulls #col-modal{background:#1a0020}
+#col-modal h2{font-size:20px;font-weight:700;color:#776e65;margin-bottom:4px}
+body.skull #col-modal h2,body.skulls #col-modal h2{color:#a89ec9}
+#col-subtitle{font-size:12px;color:#aaa;margin-bottom:12px}
+#col-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.col-cell{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:24px;background:#e8e0d5;border:1px solid #d4c9be;position:relative}
+.col-cell.skull-ex{border-color:#6a3fa0;background:#2d2b55}
+.col-cell.locked{filter:grayscale(1);opacity:0.35}
+.col-cell .col-hint{position:absolute;bottom:3px;right:5px;font-size:9px;font-weight:700;color:#aaa}
+body.skull .col-cell{background:#2a2745;border-color:#4a3f7a}
+body.skull .col-cell.skull-ex{background:#3a1a4a;border-color:#6a3fa0}
+body.skulls .col-cell{background:#2a0030;border-color:#6a0080}
+body.skulls .col-cell.skull-ex{background:#3a0045;border-color:#9a00c0}
+#col-close{padding:8px 24px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:14px;font-weight:600;width:100%}
+body.skull #col-close,body.skulls #col-close{background:#4a3f7a}
+#animal-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:#333;color:#fff;border-radius:20px;padding:10px 20px;font-size:15px;font-weight:600;z-index:300;opacity:0;transition:opacity .3s,transform .4s;pointer-events:none;white-space:nowrap}
+#animal-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+body.skull #animal-toast{background:#6a3fa0}
+body.skulls #animal-toast{background:#9a00c0}
+</style></head><body>
+<div id=app>
+  <div id=header>
+    <h1>Word Tile</h1>
+    <div id=scores>
+      <div class=score-box><div class=score-label>Score</div><div class=score-val id=score-disp>0</div></div>
+      <div class=score-box><div class=score-label>Best</div><div class=score-val id=best-disp>0</div></div>
+    </div>
+    <div id=header-btns>
+      <button id=skull-toggle title="Toggle Skull Realm">💀</button>
+      <button id=new-btn>New game</button>
+    </div>
+  </div>
+  <div id=wp-row>
+    <div id=word-progress></div>
+    <button id=collection-btn title="My Collection">🐾</button>
+  </div>
+  <div id=guess-row>
+    <input id=guess-input maxlength=9 placeholder="TYPE YOUR GUESS">
+    <button id=guess-btn>Guess</button>
+  </div>
+  <div id=msg></div>
+  <div id=grid-wrap><div id=grid></div></div>
+  <div id=rules>
+    <strong>How to play</strong><br>
+    🔀 Swipe or use arrow keys to slide all tiles.<br>
+    ➕ Two matching numbers collide? They merge and double.<br>
+    🔤 Hit <strong>128</strong> and that tile becomes a mystery letter — revealed in its correct position.<br>
+    🎯 Feeling confident? Type your guess and hit <strong>Guess</strong> — but you only get one shot per round!<br>
+    <span id=rule-progression style=display:none>🔁 Complete each word and the board carries on with a longer word next round.</span><br>
+    <span id=rule-return style=display:none>↩️ Beat the 9-letter word and the words get shorter again — 9→8→7→6→5→4. Can you go the full distance?</span>
+  </div>
+  <div id=rules-skull style=display:none>
+    💀 <strong>Welcome to Skull Realm</strong><br>
+    The rules are the same — but darker.<br>
+    <span id=rule-skull-appear style=display:none>💀 After each correct round, a skull tile will haunt an empty cell on the board. It blocks movement like a letter tile.</span><br>
+    <span id=rule-skull-merge style=display:none>⚔️ Slide two skull tiles together to destroy them both — and score 2,000 points.</span>
+  </div>
+  <div id=rules-skulls style=display:none>
+    💀💀 <strong>Welcome to Skulls Realm</strong><br>
+    You thought one skull was bad?<br>
+    <span id=rule-skulls-appear style=display:none>💀 After each round, a skull haunts the board as before.</span><br>
+    <span id=rule-skulls-merge style=display:none>⚔️ Two skulls merge into a <strong>double skull</strong>. Merge two double skulls to destroy them — scoring 5,000 points.</span>
+  </div>
+  <div id=debug-panel style=display:none;margin-top:14px;border:1px dashed #e07;border-radius:8px;padding:10px;font-size:12px;color:#333;background:#fff8fe>
+    <div style=font-weight:700;color:#e07;margin-bottom:8px>⚠️ DEBUG MODE</div>
+    <div id=debug-info style=font-family:monospace;font-size:11px;margin-bottom:10px;line-height:1.8></div>
+    <div style=display:flex;flex-wrap:wrap;gap:6px>
+      <button onclick=dbgRevealLetter() class=dbg-btn>Reveal letter</button>
+      <button onclick=dbgCompleteRound() class=dbg-btn>Complete round</button>
+      <button onclick=dbgFailRound() class=dbg-btn>Fail round</button>
+      <button onclick=dbgFillBoard() class=dbg-btn>Fill board</button>
+      <button onclick=dbgClearBoard() class=dbg-btn>Clear board</button>
+      <button onclick=dbgGiveAnimal() class=dbg-btn>Give animal</button>
+      <button onclick=dbgAnimalRound() class=dbg-btn>Animal round</button>
+      <button onclick=dbgUnlockCol() class=dbg-btn>Unlock collection</button>
+      <button onclick=dbgUnlockSkulls() class=dbg-btn>Unlock Skulls Realm</button>
+      <button onclick=dbgToggle() class=dbg-btn style=background:#fdd;border-color:#e07>Exit debug</button>
+    </div>
+  </div>
+</div>
+<div id=score-popup></div>
+<div id=animal-toast></div>
+<div id=col-overlay>
+  <div id=col-modal>
+    <h2>🐾 My Collection</h2>
+    <div id=col-subtitle></div>
+    <div id=col-grid></div>
+    <button id=col-close>Close</button>
+  </div>
+</div>
+<div id=overlay>
+  <div id=modal>
+    <h2 id=modal-title></h2>
+    <p id=modal-body></p>
+    <div id=modal-word-history></div>
+    <div id=next-reveal>Type NEXT to enter Skull Realm 💀</div>
+    <input id=modal-input maxlength=9 placeholder="TYPE YOUR GUESS" style=display:none>
+    <button id=share-btn style=display:none onclick=shareResult()>📋 Copy result to clipboard</button>
+    <button id=modal-btn></button>
+  </div>
+</div>
+<script>
+const ANIMALS=[
+  {id:'bear',   emoji:'🐻',skullOnly:false,triggers:['BEAR'],                       lens:[4]},
+  {id:'frog',   emoji:'🐸',skullOnly:false,triggers:['FROG','TOAD'],               lens:[4]},
+  {id:'raptor', emoji:'🦅',skullOnly:false,triggers:['HAWK','EAGLE'],              lens:[4,5]},
+  {id:'crab',   emoji:'🦀',skullOnly:false,triggers:['CRAB'],                       lens:[4]},
+  {id:'corvid', emoji:'🐦\u200d⬛',skullOnly:false,triggers:['CROW','RAVEN','BLACKBIRD'],lens:[4,5,9]},
+  {id:'deer',   emoji:'🦌',skullOnly:false,triggers:['DEER'],                       lens:[4]},
+  {id:'dove',   emoji:'🕊️',skullOnly:false,triggers:['DOVE'],                      lens:[4]},
+  {id:'duck',   emoji:'🦆',skullOnly:false,triggers:['DUCK'],                       lens:[4]},
+  {id:'goat',   emoji:'🐐',skullOnly:false,triggers:['GOAT'],                       lens:[4]},
+  {id:'hare',   emoji:'🐇',skullOnly:false,triggers:['HARE'],                       lens:[4]},
+  {id:'lamb',   emoji:'🐑',skullOnly:false,triggers:['LAMB'],                       lens:[4]},
+  {id:'lion',   emoji:'🦁',skullOnly:false,triggers:['LION'],                       lens:[4]},
+  {id:'mouse',  emoji:'🐭',skullOnly:false,triggers:['MOLE','SHREW'],              lens:[4,5]},
+  {id:'moth',   emoji:'🦋',skullOnly:false,triggers:['MOTH'],                       lens:[4]},
+  {id:'donkey', emoji:'🫏',skullOnly:false,triggers:['MULE','DONKEY'],             lens:[4,6]},
+  {id:'slug',   emoji:'🐌',skullOnly:false,triggers:['SLUG'],                       lens:[4]},
+  {id:'swan',   emoji:'🦢',skullOnly:false,triggers:['SWAN'],                       lens:[4]},
+  {id:'crane',  emoji:'🦩',skullOnly:false,triggers:['CRANE'],                      lens:[5]},
+  {id:'heron',  emoji:'🦤',skullOnly:false,triggers:['HERON'],                      lens:[5]},
+  {id:'bird',   emoji:'🐦',skullOnly:false,triggers:['WREN','ROBIN','GOLDFINCH'],  lens:[4,5,9]},
+  {id:'worm',   emoji:'🪱',skullOnly:false,triggers:['WORM','EARTHWORM'],          lens:[4,9]},
+  {id:'wolf',   emoji:'🐺',skullOnly:false,triggers:['WOLF'],                       lens:[4]},
+  {id:'horse',  emoji:'🐴',skullOnly:false,triggers:['HORSE'],                      lens:[5]},
+  {id:'hound',  emoji:'🐕',skullOnly:false,triggers:['HOUND'],                      lens:[5]},
+  {id:'lemur',  emoji:'🐒',skullOnly:false,triggers:['LEMUR'],                      lens:[5]},
+  {id:'otter',  emoji:'🦦',skullOnly:false,triggers:['OTTER'],                      lens:[5]},
+  {id:'shark',  emoji:'🦈',skullOnly:false,triggers:['SHARK'],                      lens:[5]},
+  {id:'skunk',  emoji:'🦨',skullOnly:false,triggers:['SKUNK'],                      lens:[5]},
+  {id:'snake',  emoji:'🐍',skullOnly:false,triggers:['SNAKE','SERPENT','BASILISK'],lens:[5,7,8]},
+  {id:'lizard', emoji:'🦎',skullOnly:false,triggers:['LIZARD'],                     lens:[6]},
+  {id:'parrot', emoji:'🦜',skullOnly:false,triggers:['PARROT'],                     lens:[6]},
+  {id:'dolphin',emoji:'🐬',skullOnly:false,triggers:['DOLPHIN'],                    lens:[7]},
+  {id:'gorilla',emoji:'🦍',skullOnly:false,triggers:['GORILLA'],                    lens:[7]},
+  {id:'leopard',emoji:'🐆',skullOnly:false,triggers:['LEOPARD'],                    lens:[7]},
+  {id:'demon',  emoji:'👹',skullOnly:true, triggers:['DEMON'],                      lens:[5]},
+  {id:'ghost',  emoji:'👻',skullOnly:true, triggers:['GHOUL','PHANTOM','BANSHEE'], lens:[5,7,7]},
+  {id:'dragon', emoji:'🐉',skullOnly:true, triggers:['DRAKE','DRAGON'],            lens:[5,6]},
+  {id:'kraken', emoji:'🦑',skullOnly:true, triggers:['KRAKEN'],                     lens:[6]},
+  {id:'warlock',emoji:'🧙',skullOnly:true, triggers:['WARLOCK'],                    lens:[7]},
+  {id:'witch',  emoji:'🧙\u200d♀️',skullOnly:true,triggers:['WITCH'],              lens:[5]},
+  {id:'shade',  emoji:'👤',skullOnly:true, triggers:['SHADE'],                      lens:[5]},
+  {id:'zombie', emoji:'🧟',skullOnly:true, triggers:['ZOMBIE'],                     lens:[6]},
+  {id:'goblin', emoji:'👺',skullOnly:true, triggers:['GOBLIN'],                     lens:[6]},
+  {id:'vampire',emoji:'🧛',skullOnly:true, triggers:['VAMPIRE'],                    lens:[7]},
+  {id:'monster',emoji:'👾',skullOnly:true, triggers:['MONSTER'],                    lens:[7]},
+  {id:'minotaur',emoji:'🐂',skullOnly:true,triggers:['MINOTAUR'],                  lens:[8]},
+  {id:'scorpion',emoji:'🦂',skullOnly:true,triggers:['SCORPION'],                  lens:[8]},
+  {id:'werewolf',emoji:'🌕',skullOnly:true,triggers:['WEREWOLF'],                  lens:[8]},
+  {id:'skeleton',emoji:'💀',skullOnly:true,triggers:['SKELETON'],                  lens:[8]},
+];
+const WORD_TO_ANIMAL={};
+ANIMALS.forEach(a=>a.triggers.forEach(t=>WORD_TO_ANIMAL[t]=a.id));
+
+const SKULL_EXTRAS={
+  5:['DEMON','GHOUL','DRAKE','WITCH','SHADE'],
+  6:['DRAGON','KRAKEN','ZOMBIE','GOBLIN'],
+  7:['PHANTOM','WARLOCK','VAMPIRE','MONSTER','SERPENT','BANSHEE'],
+  8:['MINOTAUR','SCORPION','WEREWOLF','SKELETON','BASILISK'],
+};
+
+const _w={
+  4:["able","acid","aged","area","army","away","baby","back","ball","band","bank","base","bath","bear","beat","bell","best","bird","blow","blue","boat","body","bond","bone","book","boom","born","boss","both","bowl","bulk","burn","bush","busy","call","calm","card","care","cart","case","cash","cast","cave","cell","chat","chip","chop","city","clam","clap","claw","clay","clip","club","clue","coal","coat","code","coil","cold","comb","come","cook","cool","cope","copy","cord","core","cork","corn","cost","cove","crab","crop","crow","curl","cute","dark","dart","dash","data","date","dawn","dead","deal","dear","debt","deck","deep","deer","desk","dial","diet","dire","dirt","disk","dive","dock","dome","done","door","dose","dove","down","drag","draw","drip","drop","drum","duck","dull","dump","dune","dusk","dust","duty","earn","ease","east","easy","edge","epic","even","evil","face","fact","fade","fail","fair","fake","fall","fame","farm","fast","fate","fear","feat","feel","feet","fell","felt","file","fill","film","find","fine","fire","firm","fish","fist","flag","flat","flaw","flea","flip","flow","foam","foil","fold","folk","fond","food","fool","foot","ford","fork","form","fort","foul","four","free","frog","fuel","full","fund","fuse","gain","gale","game","gasp","gate","gaze","gear","germ","gift","gill","give","glad","glee","glow","glue","goal","goat","gold","golf","gone","good","gore","gown","grab","gram","grid","grim","grin","grip","grit","grow","gulf","gull","gust","guts","hack","hail","hair","half","hall","halt","hand","hang","hard","hare","harm","harp","hash","hate","have","hawk","haze","head","heal","heap","heat","heel","held","helm","help","herd","here","hero","hide","high","hike","hill","hint","hire","hold","hole","home","hood","hook","hope","horn","host","hour","howl","hull","hump","hunt","hurl","icon","idle","inch","iron","isle","jack","jade","jail","jest","join","joke","jolt","junk","just","keen","keep","kick","kill","kind","king","kiss","knit","knob","knot","lace","lack","lake","lamb","lamp","land","lane","lark","lash","last","late","lawn","lead","leaf","leak","lean","leap","left","lend","lens","lift","like","lime","line","link","lion","list","live","load","loan","lock","loft","lone","long","look","loom","loop","lore","lose","loss","lost","loud","love","luck","lull","lump","lung","lurk","lush","made","mail","main","make","male","mall","malt","many","mare","mark","mast","mate","maze","meal","mean","meat","melt","memo","menu","mere","mesh","mild","mile","milk","mill","mind","mine","mint","miss","mist","mode","mole","monk","mood","moon","moor","mope","more","most","moth","move","much","muck","mule","muse","must","mute","myth","nail","name","navy","near","neat","neck","need","nest","news","nice","nick","node","none","noon","norm","nose","note","null","numb","obey","odds","once","only","open","oval","oven","over","owns","pace","pack","page","paid","pail","pair","pale","palm","park","part","pass","path","pave","pawn","peak","peel","peer","pelt","pest","pick","pier","pile","pill","pine","pink","pint","pipe","pity","plan","play","plea","plot","ploy","plug","plum","plus","poem","poet","poll","pond","pool","poor","port","pose","post","pour","pray","prey","prod","prop","pull","pump","pure","push","race","rack","rage","raid","rail","rain","rake","ramp","rank","rare","rash","rate","read","rear","reed","reel","rely","rent","rest","rice","rich","ride","rift","ring","riot","rise","risk","road","roam","roar","robe","rock","rode","role","roll","roof","room","root","rope","rose","rout","rove","ruby","ruin","rule","rush","rust","safe","sage","sail","sake","sale","salt","same","sand","sane","sang","sank","sash","save","scan","scar","seal","seam","sear","seat","seed","seek","self","sell","send","shed","shin","ship","shoe","shop","shot","show","shut","sick","side","sigh","sign","silk","sill","silo","sing","sink","site","size","skin","skip","slab","slam","slap","slim","slip","slot","slow","slug","snap","snow","soak","soap","soar","sock","soft","soil","sole","some","song","soot","sort","soul","soup","sour","span","spar","spin","spit","spot","spur","stab","stag","star","stay","stem","step","stew","stir","stop","stub","stud","stun","such","suit","sulk","sung","sunk","sure","swam","swan","swap","swat","swim","sync","tack","tail","take","tale","tall","tame","tank","tape","task","taut","taxi","teal","team","tear","tell","temp","tend","tent","term","test","text","than","them","then","they","thin","this","thus","tide","tile","till","tilt","time","tiny","toad","toll","tomb","tone","tool","torn","tort","toss","tour","town","trap","tray","tree","trek","trim","trio","trip","trod","true","tube","tuck","tune","turf","turn","tusk","twin","type","upon","used","user","vain","vale","vary","vase","vast","veil","vein","vent","verb","very","vest","veto","view","vile","vine","void","volt","vote","wade","wage","wake","walk","wall","wand","wane","ward","warm","warp","wart","wary","wave","wavy","weak","wean","weed","week","well","welt","went","wept","west","whim","whip","whom","wick","wide","wife","will","wilt","wily","wind","wine","wing","wink","wire","wise","wish","wisp","with","woke","wolf","womb","wood","wool","word","wore","work","worm","worn","wrap","wren","writ","yawn","year","yell","your","zone","zoom"].filter(w=>w.length===4),
+  5:["apple","brave","chess","crisp","dwarf","eagle","faith","flame","frost","gloom","grace","grand","grape","grasp","grind","grove","guard","guilt","blaze","blend","bless","blink","bliss","block","blood","bloom","blunt","board","boast","bound","brace","braid","brake","brand","brash","brass","brawl","brawn","bread","break","breed","bribe","bride","brine","bring","brink","brisk","broke","brood","brook","broom","broth","brown","brush","brute","build","built","carry","catch","cause","chain","chalk","chant","chasm","cheap","check","cheek","cheer","child","chill","chord","chore","chose","chuck","churn","claim","clamp","clang","clash","clasp","class","clean","clear","cleft","clerk","click","cliff","cling","clink","cloak","clone","close","cloth","cloud","clout","clove","clown","cluck","clump","coach","coast","comet","couch","could","count","court","cover","craft","cramp","crane","crash","creak","creek","creep","crest","crime","cross","crowd","crown","crush","crust","curve","cycle","dance","decay","decoy","dense","depth","ditch","doubt","dough","draft","drain","drape","dread","dream","dress","drift","drink","drive","drool","droop","drove","drown","dusty","elite","elude","empty","endow","enjoy","enter","envoy","epoch","erode","evade","event","exact","exert","exile","exist","expel","fable","facet","faint","fairy","fancy","farce","fatal","feast","fetch","flair","flank","flare","flash","flask","fleck","fleet","flesh","flick","fling","flint","flirt","flock","flood","floor","flour","flown","fluff","fluke","flush","flute","focus","folly","force","forge","forth","frail","freak","fresh","friar","frisk","front","froth","froze","fruit","fully","funny","furry","ghoul","gland","glare","glass","gleam","glide","glint","gloat","globe","gloss","glove","gnome","gorge","gouge","gourd","grail","graft","grime","gripe","groin","gross","group","gruff","guide","guile","gulch","gully","gusty","haste","hatch","haunt","haven","havoc","hedge","heist","hence","heron","hoard","holly","horde","horse","hotel","hound","human","humid","husky","ideal","impel","inept","infer","inner","input","inter","irate","ivory","joust","jumbo","jumpy","karma","knack","knave","knife","knoll","known","kudos","lance","lanky","large","latch","layer","leafy","leaky","ledge","leech","legal","lemur","level","light","liner","lingo","lithe","lofty","logic","loose","lucid","lucky","lunar","lunge","lusty","lyric","magic","major","maker","manor","maple","march","marry","marsh","mirth","moist","molar","moody","moral","morph","mossy","mount","mourn","muddy","mulch","mural","murky","musty","naive","naval","nervy","night","noble","noise","north","notch","novel","nymph","ocean","offer","olive","optic","orbit","order","otter","outdo","outer","oxide","ozone","pagan","paint","panic","party","paste","patch","pause","peace","peach","pearl","pedal","perch","perky","petal","petty","phase","phone","photo","pilot","pinch","pixel","pixie","place","plain","plank","plant","plate","plaza","plead","pluck","plumb","plume","plump","plush","poach","point","poker","polar","poppy","porch","power","prank","prawn","press","price","pride","prime","prism","probe","prone","prong","proof","prose","proud","prove","prowl","prune","pulse","punch","pupil","purge","quack","qualm","quart","quash","queen","query","quest","quick","quiet","quirk","quota","quote","rainy","rally","ranch","range","rapid","raven","reach","realm","rebel","recap","regal","reign","relax","repay","repel","resin","revel","rider","ridge","rifle","risky","rivet","robin","rocky","rouge","rough","round","rouse","rowdy","royal","ruler","rusty","saint","sandy","scalp","scaly","scant","scary","scene","scone","scoop","scope","scorn","scout","scowl","scrap","scrub","seize","serve","seven","sever","shack","shade","shady","shaft","shake","shaky","shale","shame","shape","share","shark","sharp","sheen","sheep","sheer","shelf","shell","shift","shoal","shock","shore","short","shout","shove","showy","shrew","shrub","shrug","siege","silly","since","sinew","skimp","skirt","skulk","skunk","slack","slang","slant","slash","sleek","sleep","sleet","slice","slide","slime","sling","slink","slope","slosh","sloth","slump","slurp","smack","small","smash","smear","smell","smite","smoke","smoky","snack","snake","snare","snarl","sneak","sneer","snide","sniff","snore","snort","snowy","snuff","solar","solid","solve","sorry","south","space","spade","spare","spark","spawn","speak","spear","speck","speed","spell","spend","spice","spill","spine","spite","splat","split","spoke","spook","spool","spoon","sport","spout","spray","spree","spunk","squad","squat","stack","staff","stain","stair","stake","stale","stall","stamp","stand","stark","start","stash","state","steal","steam","steel","steep","steer","stern","stiff","still","sting","stink","stint","stoic","stomp","stone","stood","stoop","store","storm","story","stout","stove","strap","straw","stray","strip","strut","stuck","study","stuff","stump","stung","stunk","stunt","style","sugar","suite","sulky","sunny","super","surge","swamp","swarm","swear","sweat","sweep","sweet","swept","swift","swill","swine","swing","swipe","swirl","swoop","taboo","talon","tango","taunt","tawny","tense","thank","theft","thief","thing","think","thorn","those","three","threw","throb","throw","thumb","thump","tiger","tight","tipsy","titan","title","today","token","topaz","torso","total","totem","touch","tough","towel","tower","toxic","trace","track","trade","trail","train","trait","tramp","trash","trawl","tread","trend","triad","trial","trick","tried","trill","troop","trout","trove","truce","truck","truly","trunk","trust","truth","tulip","tuner","tunic","tweak","tweed","twice","twine","twirl","twist","ultra","under","unfit","unify","union","upper","usher","usual","utter","valve","vault","vaunt","venom","viral","visor","vista","vivid","vocal","vogue","voice","vouch","waltz","waste","watch","water","weary","weave","wedge","weedy","weigh","weird","whale","wheat","wheel","where","which","while","whiff","whirl","whisk","white","whole","whose","widen","wispy","witch","witty","world","worse","worst","worth","would","wrath","wreak","wreck","wring","wrist","wrote","yacht","yearn","yield","young","youth","zesty","zippy"].filter(w=>w.length===5),
+  6:["abroad","accent","active","actual","advise","affirm","afford","afraid","agenda","agreed","always","amount","anchor","animal","answer","antler","archer","arctic","around","artist","aspect","asylum","attach","attack","attain","attire","avenue","awhile","badger","basket","battle","beacon","beaker","beaten","beauty","beckon","before","behalf","behave","behind","belief","belong","betray","better","beyond","bishop","bitter","blanch","blazer","blight","blonde","bounty","branch","bright","broach","broken","bronze","bruise","bucket","buffet","bumble","bundle","burden","button","cackle","candle","cannon","canyon","castle","cavern","cellar","chance","change","charge","chosen","chunky","cipher","circle","classy","clever","closet","cobalt","coffee","combat","compel","concur","confer","convey","copper","corner","costly","cotton","crafty","craggy","crater","craven","creaky","cunning","curfew","curved","custom","dancer","danger","dangle","daring","darken","dazzle","debate","debris","decent","decide","defeat","defend","define","degree","demand","derive","desert","design","detail","devise","devote","differ","digest","direct","disarm","domain","donkey","double","dragon","draped","drawer","dreamy","driven","duster","earthy","easily","effect","effort","either","eleven","embark","emerge","empire","enable","endure","engage","engine","engulf","enough","ensign","entire","escort","estate","evolve","except","exotic","expand","expert","extend","fabled","fallow","falter","famous","fathom","fatten","feisty","feline","fender","fierce","finger","flinch","florid","flower","fluent","flurry","fonder","forest","foster","fought","freely","fright","frozen","fumble","gadget","gallop","gamble","garnet","gasket","gather","gentle","gifted","gilded","ginger","glassy","glitch","gloomy","goblin","golden","gravel","greedy","grimly","grovel","grumpy","gutter","hammer","handle","happen","hardly","hazard","hearth","heaven","herald","hidden","holder","hollow","honest","hornet","humble","hunger","hunter","hustle","ignite","immune","impact","indent","infuse","inject","insect","inside","intact","intent","invoke","island","jangle","jester","jostle","jumble","jungle","kettle","kindle","knight","kraken","lancer","larger","lately","lavish","leader","legend","lethal","likely","limber","linger","liquor","lively","lizard","locket","lodger","lonely","loosen","louder","lunacy","mantle","marble","master","meadow","mental","mentor","meteor","mirror","misted","modern","modest","molten","mortal","mortar","mother","motive","muster","mutter","mystic","narrow","nature","nearby","neatly","nestle","nettle","nimble","noodle","number","nuzzle","object","oblige","obtain","offset","opener","ordeal","origin","outlaw","overdo","paddle","palace","pardon","parrot","partly","patent","patrol","patter","peddle","perish","permit","pierce","pigeon","pirate","planet","plunge","pocket","podium","portal","potter","powder","prefer","pretty","prince","prison","profit","proper","public","purple","quartz","queasy","quench","rabble","ragged","ramble","rankle","raptor","rascal","ravine","really","reason","recall","recede","refuge","relent","remote","repent","rescue","reside","resist","resort","revolt","riddle","ritual","robust","rocket","rotten","rugged","rumble","rustle","saddle","safety","savage","saying","scarce","script","sector","sermon","settle","shadow","should","shower","signal","silent","silver","simple","sinful","single","sizzle","sketch","sleepy","slowly","subtle","summer","sunset","surely","symbol","tackle","talent","tangle","tartan","tender","terror","thatch","theory","threat","thresh","throng","tickle","timber","tinker","toggle","tomcat","topple","torque","touchy","treaty","tremor","tribal","tricky","trifle","triple","trowel","tumble","tundra","turban","turtle","tussle","uneven","unique","unruly","useful","valley","vendor","verbal","victim","violet","virtue","vision","wander","warmth","weasel","wicker","wildly","willow","wintry","wisdom","woeful","wonder","yarrow","zombie","zealot"].filter(w=>w.length===6),
+  7:["abandon","ability","absence","academy","acclaim","account","achieve","against","ailment","alchemy","animate","anxiety","archway","arsenal","assault","astound","attract","audible","augment","avenger","average","avocado","awkward","balance","ballast","bandage","baptism","bargain","barrier","banshee","blossom","bravado","bravery","breathe","briefly","brother","cabinet","capable","captain","capture","careful","carrion","cascade","caution","channel","chapter","charity","charter","chemist","cherish","citizen","clamber","clarify","clarity","classic","climate","cluster","coastal","compass","comrade","connect","conquer","console","contact","content","contend","context","control","convert","covered","courage","crimson","crumble","crusade","cunning","current","curtain","damaged","darling","dazzled","defiant","deflect","descent","desired","destiny","destroy","devious","devoted","dignity","diploma","discord","distant","disturb","divided","dolphin","dormant","durable","earnest","eastern","eclipse","elegant","element","embrace","emperor","enchant","endorse","enhance","entropy","envious","essence","evident","exploit","fantasy","feature","fervent","fiction","fighter","finally","footing","forsake","freedom","furnish","gallant","gambler","garland","gateway","genuine","glaring","glimpse","glitter","glucose","goddess","gorilla","gradual","granite","grapple","gravity","griffin","grizzly","growing","habitat","handful","harmony","harvest","healing","healthy","heavily","helpful","history","honesty","horizon","hostage","however","hunting","iceberg","impasse","implore","improve","include","instead","integer","intense","involve","journey","justice","kinship","kitchen","knowing","lantern","lanyard","largely","leading","leather","leopard","library","linking","loading","loyalty","machine","mankind","measure","mission","mixture","monster","mystery","natural","network","notable","obscure","officer","ottoman","outpost","outside","overall","padding","passion","pathway","pattern","peasant","pendant","perfect","persist","phantom","pilgrim","pioneer","plunder","pointed","popular","portion","possess","pottery","present","prevent","problem","process","produce","promise","protect","protest","provide","purpose","pursuit","quality","quarter","quickly","raiders","rampart","ransack","rapidly","reality","reclaim","recover","reflect","refresh","release","remains","remnant","renewal","require","resolve","respect","restore","results","retreat","reunion","revenge","roaming","royalty","ruinous","rushing","satchel","savings","scatter","scholar","science","scratch","seclude","section","segment","sensing","serious","servant","serpent","shelter","sheriff","shimmer","silence","skilled","slavery","slender","sliding","soldier","somehow","sparkle","speaker","spinner","sponsor","startle","station","staying","stealth","storage","strange","stretch","striker","succeed","support","supreme","suspend","swallow","sweeper","swindle","tempest","tension","terrain","thermal","through","thunder","toppled","torment","treason","trouble","tumbled","typhoon","uncover","undergo","unusual","urgency","valiant","vampire","venture","verdict","vibrant","villain","violent","vitamin","warlock","warrior","weather","welcome","western","whisper","wilting","winning","wishful","witness","worried","younger","zealous"].filter(w=>w.length===7),
+  8:["absolute","accident","accuracy","achieved","activate","actually","adjacent","advanced","advocacy","aircraft","alliance","ambition","announce","appetite","approach","backbone","backfire","balanced","barefoot","basement","basilisk","beholden","blackout","bookworm","breakout","bulldoze","calendar","campaign","campfire","capacity","capstone","captured","carnival","cavalier","category","ceremony","chainsaw","champion","charcoal","chemical","chestnut","clearing","climbing","collapse","commence","commoner","composed","compound","compress","conceive","conclude","conflict","conquest","contrite","contract","convince","cornered","corridor","crumbled","currency","darkness","daybreak","daylight","deadline","deadlock","deafness","deathbed","decision","deflated","delusion","desolate","devotion","diameter","diplomat","directly","disaster","discover","displace","distinct","distract","doctrine","document","dominant","doubtful","dovetail","downfall","downpour","dramatic","drawback","duration","dwelling","educated","eighteen","elevated","eloquent","embattle","embolden","eminence","emphasis","enormous","entangle","eruption","euphoria","evacuate","evaluate","everyone","evidence","exchange","exorcism","exercise","explicit","fabulous","faithful","fallback","farewell","farmyard","fearless","fearsome","feedback","festival","finances","fireside","flagship","flashback","flexible","flourish","flywheel","foothold","footpath","footwear","fortress","forsaken","fraction","fragment","frontier","fruitful","function","gladness","gleaming","glorious","goalpost","graceful","gradient","grateful","grounded","gruesome","guardian","guidance","hallmark","handmade","handover","hardened","hardship","harmless","haunting","headband","headland","headlong","helpless","heritage","highland","hillside","holdfast","homeland","honestly","hopeless","humanity","huntsman","identity","ignorant","immortal","imperial","imposter","incident","increase","infamous","infinite","inherent","initiate","inspired","instinct","interact","interest","internal","interval","intrepid","invasion","ironclad","isolated","jealousy","judgment","jubilant","keenness","knitwear","lakeside","landmark","language","latitude","lavender","lawfully","leafless","leftover","leverage","lifelong","lonesome","longboat","longship","luminous","lustrous","magnetic","mainland","majestic","manifest","maritime","marksman","medicine","medieval","memorial","merchant","midnight","militant","mindless","minotaur","mischief","mistaken","momentum","morphine","movement","multiply","mutation","nameless","navigate","nautical","necklace","nobleman","notebook","nutrient","obstacle","offshore","opponent","outbreak","outreach","outright","outsider","overcome","overlook","overland","overture","pandemic","paradise","pastoral","patience","peaceful","perceive","peculiar","personal","persuade","physical","platform","pleasant","plumbing","portable","portrait","position","positive","powerful","preserve","pressure","previous","priority","prodigal","proclaim","progress","profound","properly","prophecy","prospect","province","prudence","purchase","radiance","rational","reactive","reckless","regulate","reliable","remember","renowned","resource","revealed","reversal","rigorous","riverbed","romantic","ruthless","sanction","scaffold","scenario","schooner","scorpion","seasonal","sergeant","sentinel","sequence","shadowed","shielded","shipyard","shortage","showcase","silently","simulate","situated","skeleton","skylight","slightly","snapshot","snowfall","solitude","solution","southern","spacious","spectrum","spirited","splinter","spinning","splendid","squadron","stagnant","stalwart","standard","standoff","starting","steadily","sterling","stockade","stoicism","strategy","strength","stricken","striking","struggle","studying","suddenly","sunlight","sunshine","sweeping","talisman","tangible","talented","taskwork","teaching","teamwork","temporal","thankful","thousand","together","tolerant","tomorrow","tortured","towering","township","tracking","training","transfer","transmit","treasure","triangle","trickery","tropical","troubled","truthful","twilight","ultimate","unbroken","underway","unending","universe","unlikely","unshaken","uplifted","uprising","upstream","valuable","velocity","vanguard","variable","vigilant","volcanic","wanderer","warranty","wasteland","watchful","waypoint","werewolf","westward","wherever","wildlife","wildfire","windfall","windmill","wingspan","withdraw","withered","woodwork","workshop","workload","yearlong","yourself","youthful"].filter(w=>w.length===8),
+  9:["abandoned","absurdity","acclaimed","adventure","aftermath","algorithm","ambiguity","anonymous","architect","assurance","attention","authentic","awareness","beautiful","benchmark","blackbird","blackmail","blueprint","bombshell","boundless","brainwave","breakdown","brickwork","brilliant","broadcast","buccaneer","butterfly","calculate","candlelit","captivate","carpentry","character","chronicle","circulate","cityscape","clockwise","coastline","combatant","commander","community","composure","concerned","confident","conqueror","conscript","courtyard","crossfire","crosswind","crumbling","custodian","cutthroat","dauntless","dayspring","dedicated","defendant","delighted","departure","deserving","desperate","developed","difficult","dimension","direction","discovery","driftwood","earthworm","elaborate","elevation","elsewhere","emotional","encounter","encourage","endurance","establish","evergreen","excellent","exuberant","faultless","firelight","firmament","flintlock","formation","fortified","framework","freelance","frequency","frontline","frostbite","fulfilled","gladiator","goldfinch","graduated","grapevine","greatness","handcraft","happening","harbinger","heartbeat","heartfelt","hierarchy","highlands","horseback","hurricane","identical","implement","important","impressed","inclusion","ingenuity","innermost","intellect","isolation","justified","keystroke","knowledge","labyrinth","landscape","legendary","lightning","longevity","magnitude","marauding","medallion","migration","milestone","monastery","moonshine","motivated","mountains","navigator","nightfall","notorious","objective","obstinate","outnumber","overnight","overpower","ownership","patchwork","peacetime","persevere","placement","planetary","populated","potential","precision","privilege","prominent","reckoning","reconcile","reinforce","rejoicing","relevance","remainder","resilient","respected","restraint","righteous","ruination","saltwater","sanctuary","scattered","seafaring","shipwreck","shoreline","signature","situation","snowflake","sovereign","spectacle","starlight","statement","steadfast","stillness","storyline","structure","stumbling","submerged","supremacy","surrender","tidewater","tradition","transport","treatment","turbulent","uncertain","uncovered","undaunted","unfailing","unlimited","unsettled","vanishing","venturing","versatile","vigilance","wandering","waterfall","welcoming","wholesome","widescale","willpower","windstorm","withstand","wonderful","worldwide","zealously"].filter(w=>w.length===9)
+};
+
+const RL=[4,5,6,7,8,9,8,7,6,5,4],N=4,TR=128,GB=5000,EB=1000,PB=500,LB=100,SMB=2000,DSMB=5000,SK='💀',DSK='💀💀';
+const PITY_BASE=5,PITY_FAIL=2;
+const $=id=>document.getElementById(id);
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function isSk(v){return v===SK}
+function isDSk(v){return v===DSK}
+function isLt(v){return typeof v==='string'&&v!==SK&&v!==DSK}
+function isSp(v){return typeof v==='string'}
+function lOff(a,b){if(a.length!==b.length)return Infinity;let n=0;for(let i=0;i<a.length;i++)if(a[i]!==b[i])n++;return n;}
+
+// ── COLLECTION ────────────────────────────────────────────────────────────────
+const COL_VERSION=1;
+function loadCol(){try{let r=localStorage.getItem('wt_col');if(!r)return[];let p=JSON.parse(r);if(p&&!Array.isArray(p)&&p.v===COL_VERSION)return Array.isArray(p.ids)?p.ids:[];if(Array.isArray(p)){saveCol(p);return p;}return[];}catch{return[];}}
+function saveCol(ids){localStorage.setItem('wt_col',JSON.stringify({v:COL_VERSION,ids}));}
+function loadPity(){return parseInt(localStorage.getItem('wt_pity')||String(PITY_BASE));}
+function savePity(n){localStorage.setItem('wt_pity',String(n));}
+
+let collected=loadCol();
+let pityCounter=loadPity(),pityRound=-1,pityWord=null,pityPenaltyApplied=false;
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let bd,sc,best=parseInt(localStorage.getItem('wt_best')||'0'),
+    skBest=parseInt(localStorage.getItem('wt_skull_best')||'0'),
+    sksBest=parseInt(localStorage.getItem('wt_skulls_best')||'0'),
+    wd,wl,lm,go,res=false,aq=[],tsc=0,lc=0,smc=0,dsmc=0,ri=0,uw=new Set(),wh=[],
+    hrnd=localStorage.getItem('wt_won_round')==='1',
+    h9=localStorage.getItem('wt_won_nine')==='1',
+    hall=localStorage.getItem('wt_won_all')==='1',
+    hskull=localStorage.getItem('wt_won_skull')==='1',
+    hsa=localStorage.getItem('wt_skull_appear')==='1',
+    hsm=localStorage.getItem('wt_skull_merge')==='1',
+    mode=0, // 0=base 1=skull 2=skulls
+    dbg=false;
+
+function skm(){return mode>=1;}
+function skms(){return mode===2;}
+
+if(hrnd)$('rule-progression').style.display='block';
+if(h9)$('rule-return').style.display='block';
+if(hall)$('skull-toggle').style.display='block';
+if(hsa)$('rule-skull-appear').style.display='block';
+if(hsm)$('rule-skull-merge').style.display='block';
+if(collected.length>0)$('collection-btn').style.display='block';
+updateSkullToggle();
+
+// ── SKULL TOGGLE UI ───────────────────────────────────────────────────────────
+function updateSkullToggle(){
+  let btn=$('skull-toggle');
+  btn.textContent=mode===2?'💀💀':'💀';
+  btn.title=hskull?'Toggle Skull / Skulls Realm':'Toggle Skull Realm';
+  btn.className='';
+  if(mode===1)btn.classList.add('active');
+  else if(mode===2)btn.classList.add('skulls-active');
+}
+
+// ── PITY ──────────────────────────────────────────────────────────────────────
+function setupPity(){
+  pityRound=-1;pityWord=null;pityPenaltyApplied=false;
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
+  if(!pool.length||pityCounter>0)return;
+  let animal=pool[rnd(0,pool.length-1)];
+  let candidates=[];
+  RL.forEach((len,idx)=>{
+    animal.triggers.forEach(t=>{
+      let w=t.toLowerCase();
+      let inBase=_w[len]&&_w[len].includes(w);
+      let inExtra=skm()&&SKULL_EXTRAS[len]&&SKULL_EXTRAS[len].map(x=>x.toLowerCase()).includes(w);
+      if(inBase||inExtra)candidates.push({idx,word:t.toUpperCase()});
+    });
+  });
+  if(candidates.length){let pick=candidates[rnd(0,candidates.length-1)];pityRound=pick.idx;pityWord=pick.word;}
+}
+
+function applyPityPenalty(){
+  if(pityPenaltyApplied)return;
+  if(pityRound>=0&&pityWord&&!collected.includes(WORD_TO_ANIMAL[pityWord])){pityCounter=PITY_FAIL;savePity(pityCounter);}
+  pityPenaltyApplied=true;
+}
+
+// ── ANIMAL HELPERS ────────────────────────────────────────────────────────────
+function checkAnimal(word){
+  let id=WORD_TO_ANIMAL[word.toUpperCase()];if(!id)return null;
+  let animal=ANIMALS.find(a=>a.id===id);
+  if(!animal||animal.skullOnly&&!skm())return null;
+  if(collected.includes(id))return null;
+  return animal;
+}
+
+function collectAnimal(animal){
+  collected.push(animal.id);saveCol(collected);
+  pityCounter=PITY_BASE;savePity(pityCounter);pityPenaltyApplied=true;
+  $('collection-btn').style.display='block';
+  let t=$('animal-toast');t.textContent=animal.emoji+' New: '+animal.triggers[0]+'!';
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function openCollection(){
+  let cg=$('col-grid');cg.innerHTML='';
+  let base=ANIMALS.filter(a=>!a.skullOnly);
+  let sk=ANIMALS.filter(a=>a.skullOnly&&(hall||collected.includes(a.id)));
+  let all=[...base,...sk];
+  $('col-subtitle').textContent=collected.length+' / '+all.length+' discovered';
+  all.forEach(a=>{
+    let unlocked=collected.includes(a.id);
+    let d=document.createElement('div');
+    d.className='col-cell'+(a.skullOnly?' skull-ex':'')+(unlocked?'':' locked');
+    if(unlocked){d.textContent=a.emoji;d.title=a.triggers.join(' / ');}
+    else{
+      d.innerHTML='<span style="font-size:18px;opacity:0.3">?</span><span class=col-hint>'+(a.skullOnly?'💀':'')+Math.min(...a.lens)+'</span>';
+      d.title=a.skullOnly?'Skull Realm only':'';
+    }
+    cg.appendChild(d);
+  });
+  $('col-overlay').classList.add('show');
+}
+
+// ── MODE ──────────────────────────────────────────────────────────────────────
+function setMode(m){
+  mode=m;
+  document.body.className=m===2?'skulls':m===1?'skull':'';
+  document.querySelector('h1').textContent=m===2?'Skulls Realm':m===1?'Skull Realm':'Word Tile';
+  $('rules').style.display=m===0?'block':'none';
+  $('rules-skull').style.display=m===1?'block':'none';
+  $('rules-skulls').style.display=m===2?'block':'none';
+  updateSkullToggle();
+}
+
+function pickW(len){
+  if(pityRound===ri&&pityWord){uw.add(pityWord.toLowerCase());return pityWord;}
+  let base=_w[len]?[..._w[len]]:[];
+  let extras=skm()&&SKULL_EXTRAS[len]?SKULL_EXTRAS[len].map(w=>w.toLowerCase()):[];
+  let pool=[...base,...extras].filter(w=>!uw.has(w));
+  if(!pool.length){uw.clear();pool=[...base,...extras];}
+  if(!pool.length){console.error('No words len '+len);return'ERROR';}
+  let w=pool[rnd(0,pool.length-1)];uw.add(w);return w.toUpperCase();
+}
+
+function newGame(){
+  bd=Array.from({length:N},()=>Array(N).fill(0));
+  sc=0;tsc=0;lc=0;smc=0;dsmc=0;go=false;res=false;aq=[];ri=0;uw=new Set();wh=[];
+  setupPity();startRound();spawnT(true);spawnT(true);renderG();updH();
+}
+
+function startRound(){
+  wl=RL[ri];wd=pickW(wl);lm=Array(wl).fill(false);
+  let inp=$('guess-input');inp.maxLength=wl;inp.value='';inp.placeholder='TYPE YOUR GUESS';
+  $('msg').textContent='';setLocked(false);updWP();
+}
+
+function setLocked(locked){$('guess-input').disabled=locked;$('guess-btn').disabled=locked;}
+
+function spawnT(silent){
+  let e=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(bd[r][c]===0)e.push([r,c]);
+  if(!e.length)return false;
+  let[r,c]=e[rnd(0,e.length-1)];bd[r][c]=Math.random()<0.9?2:4;
+  if(!silent)aq.push({type:'spawn',r,c});return true;
+}
+
+function revNext(){
+  let u=[];for(let i=0;i<wl;i++)if(!lm[i])u.push(i);
+  if(!u.length)return null;
+  let i=u[rnd(0,u.length-1)];lm[i]=true;return wd[i];
+}
+function allRev(){return lm.every(v=>v);}
+
+function slideR(row){
+  let arr=row.filter(v=>v!==0),out=[],i=0;
+  while(i<arr.length){
+    if(i+1<arr.length&&!isSp(arr[i])&&arr[i]===arr[i+1]){
+      // number merge
+      let val=arr[i]*2,nl=false;
+      if(val===TR){let ch=revNext();if(ch){val=ch;nl=true;}}
+      out.push(val);
+      if(!isSp(val)){sc+=val;tsc+=val;}else{lc++;sc+=LB;saveBest();}
+      if(nl)aq.push({type:'letter',idx:out.length-1});
+      else aq.push({type:'mergeIdx',idx:out.length-1});
+      i+=2;
+    }else if(i+1<arr.length&&isSk(arr[i])&&isSk(arr[i+1])){
+      // skull+skull
+      sc+=SMB;smc++;saveBest();
+      if(skms()){
+        // in Skulls Realm: merge into double skull
+        out.push(DSK);
+        aq.push({type:'dskullSpawn',idx:out.length-1});
+      } else {
+        // in Skull Realm: destroy both
+        aq.push({type:'skullMerge',idx:out.length});
+      }
+      if(!hsm){hsm=true;localStorage.setItem('wt_skull_merge','1');$('rule-skull-merge').style.display='block';}
+      i+=2;
+    }else if(i+1<arr.length&&isDSk(arr[i])&&isDSk(arr[i+1])){
+      // double skull + double skull = destroy, 5000pts
+      sc+=DSMB;dsmc++;saveBest();
+      aq.push({type:'dskullMerge',idx:out.length});
+      i+=2;
+    }else{out.push(arr[i]);i++;}
+  }
+  while(out.length<N)out.push(0);return out;
+}
+
+function procR(row,ri2,isC,ci,rev,ma){
+  let prev=[...row],oq=[...aq];aq=[];
+  let res2=slideR(row);
+  aq.forEach(a=>{
+    let pos=rev?N-1-a.idx:a.idx;
+    if(a.type==='skullMerge')ma.push({type:'skullMerge',r:isC?pos:ri2,c:isC?ci:pos});
+    else if(a.type==='dskullMerge')ma.push({type:'dskullMerge',r:isC?pos:ri2,c:isC?ci:pos});
+    else if(a.type==='dskullSpawn')ma.push({type:'dskullSpawn',r:isC?pos:ri2,c:isC?ci:pos});
+    else ma.push({type:a.type==='mergeIdx'?'merge':'letter',r:isC?pos:ri2,c:isC?ci:pos});
+  });
+  aq=oq;return{res:res2,changed:res2.join()!==prev.join()};
+}
+
+function move(dir){
+  if(go||res)return;
+  let ma=[],changed=false,nb=bd.map(r=>[...r]);aq=[];
+  if(dir==='left'){for(let r=0;r<N;r++){let{res:rs,changed:c}=procR(nb[r],r,false,0,false,ma);nb[r]=rs;if(c)changed=true;}}
+  else if(dir==='right'){for(let r=0;r<N;r++){let rev=[...nb[r]].reverse();let{res:rs,changed:c}=procR(rev,r,false,0,true,ma);rs.reverse();nb[r]=rs;if(c)changed=true;}}
+  else if(dir==='up'){for(let c=0;c<N;c++){let col=nb.map(r=>r[c]);let{res:rs,changed:ch}=procR(col,0,true,c,false,ma);for(let r=0;r<N;r++)nb[r][c]=rs[r];if(ch)changed=true;}}
+  else if(dir==='down'){for(let c=0;c<N;c++){let col=nb.map(r=>r[c]).reverse();let{res:rs,changed:ch}=procR(col,0,true,c,true,ma);rs.reverse();for(let r=0;r<N;r++)nb[r][c]=rs[r];if(ch)changed=true;}}
+  if(!changed)return;
+  bd=nb;saveBest();aq=[...ma];
+  if(allRev()){res=true;spawnT(false);renderG();updH();updWP();setTimeout(()=>completeR('auto'),400);dbgR();return;}
+  let sp=spawnT(false);renderG();updH();updWP();
+  if(!sp&&!canMove())setTimeout(()=>showLC(),350);
+  dbgR();
+}
+
+function saveBest(){
+  let overall=Math.max(best,skBest,sksBest);
+  if(mode===2){if(sc>sksBest){sksBest=sc;localStorage.setItem('wt_skulls_best',sksBest);}overall=Math.max(best,skBest,sksBest);}
+  else if(mode===1){if(sc>skBest){skBest=sc;localStorage.setItem('wt_skull_best',skBest);}overall=Math.max(best,skBest);}
+  else{if(sc>best){best=sc;localStorage.setItem('wt_best',best);}}
+  if(overall>best){best=overall;localStorage.setItem('wt_best',best);}
+}
+
+function canMove(){
+  for(let r=0;r<N;r++){
+    for(let c=0;c<N;c++){
+      if(bd[r][c]===0)return true;
+      let v=bd[r][c];
+      if(isSk(v)){if(c+1<N&&isSk(bd[r][c+1]))return true;if(r+1<N&&isSk(bd[r+1][c]))return true;continue;}
+      if(isDSk(v)){if(c+1<N&&isDSk(bd[r][c+1]))return true;if(r+1<N&&isDSk(bd[r+1][c]))return true;continue;}
+      if(isSp(v))continue;
+      if(c+1<N&&!isSp(bd[r][c+1])&&bd[r][c+1]===v)return true;
+      if(r+1<N&&!isSp(bd[r+1][c])&&bd[r+1][c]===v)return true;
+    }
+  }return false;
+}
+
+function clearLT(cb){
+  res=true;const g=$('grid');let had=false;
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+    if(isLt(bd[r][c])){let el=g.children[r*N+c];bd[r][c]=0;if(el)el.classList.add('anim-clear');had=true;}
+  }
+  setTimeout(()=>{res=false;renderG();cb();},had?320:0);
+}
+
+function spawnSkull(cb){
+  res=true;
+  let empty=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(bd[r][c]===0)empty.push([r,c]);
+  let targets=empty.length>0?empty:[];
+  if(!targets.length){for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(!isSp(bd[r][c])&&bd[r][c]!==0)targets.push([r,c]);}
+  if(!targets.length){res=false;cb();return;}
+  let[sr,sc2]=targets[rnd(0,targets.length-1)];
+  bd[sr][sc2]=SK;
+  if(!hsa){hsa=true;localStorage.setItem('wt_skull_appear','1');
+    $('rule-skull-appear').style.display='block';
+    if(skms())$('rule-skulls-appear').style.display='block';
+  }
+  renderG();
+  setTimeout(()=>{
+    const g=$('grid');let el=g.children[sr*N+sc2];
+    if(el){el.classList.remove('anim-skull-hop');void el.offsetWidth;el.classList.add('anim-skull-hop');}
+    setTimeout(()=>{res=false;cb();},700);
+  },50);
+}
+
+function completeR(how){
+  if(wh.length>ri){res=false;return;}
+  setLocked(true);
+  const wlSnap=wl,mc=lm.filter(v=>!v).length,early=mc>0,bonus=GB+(early?EB*mc:0);
+  sc+=bonus;saveBest();updH();
+  let animal=checkAnimal(wd);
+  if(animal)collectAnimal(animal);
+  wh.push({word:wd,how,early,eb:early?EB*mc:0,pity:false,km:[...lm],animal:animal?animal.emoji:null});
+  if(!hrnd){hrnd=true;localStorage.setItem('wt_won_round','1');$('rule-progression').style.display='block';}
+  if(!h9&&wlSnap===9){h9=true;localStorage.setItem('wt_won_nine','1');$('rule-return').style.display='block';}
+  const isFinal=ri===RL.length-1;
+  clearLT(()=>{
+    if(skm()){
+      spawnSkull(()=>{
+        if(isFinal){
+          // unlock logic
+          if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}
+          if(mode===1&&!hskull){hskull=true;localStorage.setItem('wt_won_skull','1');updateSkullToggle();}
+          showEnd(true);
+        } else {ri++;startRound();renderG();}
+      });
+    } else {
+      if(isFinal){
+        if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}
+        showEnd(true);
+      } else {ri++;startRound();renderG();}
+    }
+  });
+}
+
+function failG(guess){
+  const pity=guess.toUpperCase().length===wd.length&&lOff(guess.toUpperCase(),wd)===1;
+  if(pity){sc+=PB;saveBest();updH();}
+  applyPityPenalty();
+  wh.push({word:wd,how:'fail',early:false,eb:0,guess:guess.toUpperCase(),pity,km:[...lm],animal:null});
+  showEnd(false);
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function tileClass(v){
+  if(isSk(v))return'skull';if(isDSk(v))return'dskull';
+  if(isLt(v))return'letter';if(!v)return'';if(v<=TR)return'v'+v;return'vhigh';
+}
+
+function renderG(){
+  const g=$('grid');g.innerHTML='';
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+    let v=bd[r][c],d=document.createElement('div');
+    d.className='cell'+(v?' '+tileClass(v):'');d.textContent=v||'';g.appendChild(d);
+  }
+  requestAnimationFrame(()=>{
+    aq.forEach(a=>{
+      let el=g.children[a.r*N+a.c];if(!el)return;
+      el.classList.remove('anim-spawn','anim-merge','anim-letter','anim-skull-merge','anim-dskull-merge','anim-dskull-spawn');void el.offsetWidth;
+      if(a.type==='spawn')el.classList.add('anim-spawn');
+      else if(a.type==='merge'){el.classList.add('anim-merge');showPop(el,'+'+bd[a.r][a.c].toLocaleString());}
+      else if(a.type==='letter'){el.classList.add('anim-letter');showPop(el,'+LETTER!');}
+      else if(a.type==='skullMerge'){el.classList.add('anim-skull-merge');showPop(el,'💀 +'+SMB);}
+      else if(a.type==='dskullSpawn'){el.classList.add('anim-dskull-spawn');showPop(el,'💀💀');}
+      else if(a.type==='dskullMerge'){el.classList.add('anim-dskull-merge');showPop(el,'💀💀 +'+DSMB);}
+    });aq=[];
+  });
+}
+
+function showPop(el,text){
+  let p=$('score-popup'),rect=el.getBoundingClientRect();
+  p.textContent=text;p.style.left=(rect.left+rect.width/2-24)+'px';p.style.top=(rect.top-8)+'px';
+  p.classList.remove('float');void p.offsetWidth;p.classList.add('float');
+}
+
+function updH(){
+  $('score-disp').textContent=sc.toLocaleString();
+  $('best-disp').textContent=Math.max(best,skBest,sksBest).toLocaleString();
+}
+
+function updWP(){
+  let wp=$('word-progress');wp.innerHTML='';wp.className='';
+  if(wl>=7)wp.classList.add('len-'+wl);
+  let isPity=pityRound===ri&&pityWord===wd;
+  let glowCol=mode===2?'#ff6ec7':mode===1?'#a060e0':'#edc22e';
+  wp.style.filter=isPity?'drop-shadow(0 0 6px '+glowCol+')':'';
+  for(let i=0;i<wl;i++){
+    let s=document.createElement('div');
+    s.className='letter-slot'+(lm[i]?' revealed':'');
+    s.textContent=lm[i]?wd[i]:'?';wp.appendChild(s);
+  }
+}
+
+function hIcon(how){
+  if(how==='auto')return'🔤';if(how==='guess')return'⭐';if(how==='lastchance')return'😅';if(how==='fail')return'💀';
+  console.warn('Unknown hIcon:'+how);return'❓';
+}
+
+function buildWH(){
+  let h='<div class="word-history">';
+  wh.forEach((e,i)=>{
+    let fail=e.how==='fail';
+    let wd2=e.early?e.word.split('').map((ch,j)=>e.km[j]?'<span>'+ch+'</span>':'<span style="color:#B7791F;font-weight:800">'+ch+'</span>').join(''):e.word;
+    h+='<div class="word-history-row"><span class="wh-icon">'+hIcon(e.how)+'</span><span style="color:#888;font-size:12px">'+RL[i]+'L</span><span class="wh-word" style="'+(fail?'color:#c0392b':'')+'"> '+wd2+'</span>'+(e.early?'<span class="wh-tag">(early - '+e.eb/EB+')</span>':'')+(fail&&e.pity?'<span class="wh-tag">😬</span>':'')+(e.animal?'<span style="margin-left:4px;font-size:15px">'+e.animal+'</span>':'')+'</div>';
+  });
+  return h+'</div>';
+}
+
+function multiplier(){return mode===2?1.2:mode===1?1.1:1;}
+
+function scoreBD(){
+  let gc=wh.filter(h=>h.how!=='auto'&&h.how!=='fail').length,tgb=gc*GB;
+  let teb=wh.filter(h=>h.early).reduce((s,h)=>s+h.eb,0);
+  let tpb=wh.filter(h=>h.pity).length*PB,tlb=lc*LB,tsb=smc*SMB,tdsb=dsmc*DSMB;
+  let mul=multiplier();
+  let sub=tsc+tlb+tgb+teb+tpb+tsb+tdsb;
+  let final=Math.round(sub*mul);
+  let modeName=mode===2?'Skulls Realm 💀💀':mode===1?'Skull Realm 💀':'';
+  return'<table style="width:100%;font-size:13px;color:#776e65;border-collapse:collapse;text-align:left;margin-top:8px">'+
+    '<tr><td>Tile merges</td><td style="text-align:right">'+tsc.toLocaleString()+'</td></tr>'+
+    '<tr><td>Letters unlocked ('+lc+' \xd7 '+LB+')</td><td style="text-align:right">+'+tlb.toLocaleString()+'</td></tr>'+
+    (tgb>0?'<tr><td>Correct guesses ('+gc+' \xd7 '+GB.toLocaleString()+')</td><td style="text-align:right">+'+tgb.toLocaleString()+'</td></tr>':'')+
+    (teb>0?'<tr><td>Early guess bonuses 🎉</td><td style="text-align:right">+'+teb.toLocaleString()+'</td></tr>':'')+
+    (tpb>0?'<tr><td>Near miss bonus 😬</td><td style="text-align:right">+'+tpb.toLocaleString()+'</td></tr>':'')+
+    (tsb>0?'<tr><td>Skull merges 💀 ('+smc+' \xd7 '+SMB.toLocaleString()+')</td><td style="text-align:right">+'+tsb.toLocaleString()+'</td></tr>':'')+
+    (tdsb>0?'<tr><td>Double skull merges 💀💀 ('+dsmc+' \xd7 '+DSMB.toLocaleString()+')</td><td style="text-align:right">+'+tdsb.toLocaleString()+'</td></tr>':'')+
+    (mode>0?'<tr><td style="color:#888;font-size:12px">Subtotal</td><td style="text-align:right;color:#888;font-size:12px">'+sub.toLocaleString()+'</td></tr>'+
+      '<tr><td>'+modeName+' bonus</td><td style="text-align:right">\xd7 '+mul+'</td></tr>':'')+
+    '<tr style="font-weight:700;color:#333;border-top:1px solid #d4c9be"><td>Final score</td><td style="text-align:right">'+final.toLocaleString()+'</td></tr></table>';
+}
+
+function shareText(won){
+  let modeStr=mode===2?'💀💀 Skulls Realm':mode===1?'💀 Skull Realm':'Word Tile';
+  let url=window.location.href.replace(/\/$/,'');
+  let lines=[modeStr+' '+(won?'🏆':'💀'),'Round '+wh.length+'/'+RL.length+' \xb7 '+sc.toLocaleString()+'pts',''];
+  wh.forEach(h=>{
+    if(h.how==='fail')lines.push(hIcon(h.how)+' '+h.guess+' \u2192 '+h.word+(h.pity?' 😬':''));
+    else lines.push(hIcon(h.how)+' '+h.word+(h.early?' (early - '+h.eb/EB+')':'')+(h.animal?' '+h.animal:''));
+  });
+  lines.push('',url);return lines.join('\n');
+}
+
+function shareResult(){
+  let won=wh.length>0&&wh[wh.length-1].how!=='fail';
+  navigator.clipboard.writeText(shareText(won)).then(()=>{
+    $('share-btn').textContent='✅ Copied!';
+    setTimeout(()=>{$('share-btn').textContent='📋 Copy result to clipboard';},2000);
+  }).catch(()=>alert(shareText(won)));
+}
+
+function showEnd(won){
+  go=true;applyPityPenalty();
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
+  if(pool.length){pityCounter=Math.max(0,pityCounter-1);savePity(pityCounter);}
+  if(mode>0){sc=Math.round(sc*multiplier());saveBest();}
+  let cr=wh.length;
+  let body=won?(mode===2?'You conquered Skulls Realm! 💀💀':mode===1?'You conquered Skull Realm!':'Incredible — you conquered all eleven rounds!')+'<br>'
+    :'You guessed <strong>'+wh[wh.length-1].guess+'</strong> — the word was <strong>'+wd+'</strong>.<br>';
+  body+=scoreBD();
+  $('modal-title').textContent=won?'You did it! 🏆':'Game over \xb7 Round '+cr+'/'+RL.length;
+  $('modal-body').innerHTML=body;$('modal-word-history').innerHTML=buildWH();
+  $('modal-input').style.display='none';$('share-btn').style.display='block';
+  let nr=$('next-reveal');nr.style.display=(won&&mode===0&&hall&&wh.length===RL.length)||(won&&mode===0&&!hall)?'block':'none';
+  let btn=$('modal-btn');btn.textContent='Play again';
+  btn.onclick=()=>{$('overlay').classList.remove('show');newGame();};
+  $('overlay').classList.add('show');
+}
+
+function showLC(){
+  go=true;$('modal-title').textContent='Last chance!';
+  $('modal-body').innerHTML='No moves left. One final guess — make it count.';
+  $('modal-word-history').innerHTML='';$('share-btn').style.display='none';$('next-reveal').style.display='none';
+  let inp=$('modal-input');inp.style.display='block';inp.value='';inp.maxLength=wl;
+  let btn=$('modal-btn');btn.disabled=false;btn.textContent='Submit final guess';
+  btn.onclick=()=>{
+    let g=inp.value.trim();if(!g||g.length<wl)return;
+    btn.disabled=true;$('overlay').classList.remove('show');go=false;
+    if(g.toUpperCase()===wd)completeR('lastchance');else failG(g);
+  };
+  $('overlay').classList.add('show');
+}
+
+// ── DEBUG ─────────────────────────────────────────────────────────────────────
+function dbgToggle(){
+  dbg=!dbg;$('debug-panel').style.display=dbg?'block':'none';
+  let base=mode===2?'Skulls Realm':mode===1?'Skull Realm':'Word Tile';
+  document.querySelector('h1').textContent=base+(dbg?' [DEBUG]':'');
+  if(dbg)dbgR();
+}
+function dbgR(){
+  if(!dbg)return;let p=$('debug-info');if(!p)return;
+  let emp=0,sks=0,dsks=0;
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(bd[r][c]===0)emp++;if(isSk(bd[r][c]))sks++;if(isDSk(bd[r][c]))dsks++;}
+  p.innerHTML='word: <b>'+wd+'</b> ('+wl+'L) \xb7 round: <b>'+(ri+1)+'/'+RL.length+'</b><br>'+
+    'mask: <b>'+lm.map((v,i)=>v?wd[i]:'_').join('')+'</b> \xb7 revealed: <b>'+lm.filter(v=>v).length+'/'+wl+'</b><br>'+
+    'score: <b>'+sc+'</b> \xb7 best: <b>'+best+'</b><br>'+
+    'empty: <b>'+emp+'</b> \xb7 skulls: <b>'+sks+'</b> \xb7 dskulls: <b>'+dsks+'</b> \xb7 res: <b>'+res+'</b> \xb7 go: <b>'+go+'</b> \xb7 mode: <b>'+mode+'</b><br>'+
+    'collected: <b>'+collected.length+'/50</b> \xb7 pity: <b>'+pityCounter+'</b> \xb7 pityRound: <b>'+pityRound+'</b> \xb7 pityWord: <b>'+(pityWord||'\u2014')+'</b>';
+}
+function dbgRevealLetter(){if(go||res)return;let ch=revNext();if(ch){renderG();updWP();if(allRev()){res=true;setTimeout(()=>completeR('auto'),400);}}dbgR();}
+function dbgCompleteRound(){if(go||res)return;while(lm.some(v=>!v))revNext();updWP();res=true;setTimeout(()=>{completeR('auto');dbgR();},200);}
+function dbgFailRound(){if(go||res)return;failG('DEBUG');}
+function dbgFillBoard(){if(go||res)return;let v=2;for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(bd[r][c]===0){bd[r][c]=v;v=v===2?4:2;}}renderG();dbgR();}
+function dbgClearBoard(){if(go||res)return;for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(!isSp(bd[r][c]))bd[r][c]=0;}renderG();dbgR();}
+function dbgGiveAnimal(){
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
+  if(!pool.length){alert('All available animals collected!');return;}
+  collectAnimal(pool[rnd(0,pool.length-1)]);dbgR();
+}
+function dbgAnimalRound(){
+  if(go||res)return;
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
+  if(!pool.length){alert('All available animals collected!');return;}
+  let candidates=[];
+  pool.forEach(a=>{
+    RL.forEach((len,idx)=>{
+      a.triggers.forEach(t=>{
+        let w=t.toLowerCase();
+        let inBase=_w[len]&&_w[len].includes(w);
+        let inExtra=skm()&&SKULL_EXTRAS[len]&&SKULL_EXTRAS[len].map(x=>x.toLowerCase()).includes(w);
+        if(inBase||inExtra)candidates.push({word:t.toUpperCase(),idx,len});
+      });
+    });
+  });
+  if(!candidates.length){alert('No uncollected animal words found in any round.');return;}
+  let pick=candidates[rnd(0,candidates.length-1)];
+  ri=pick.idx;wl=pick.len;wd=pick.word;lm=Array(wl).fill(false);
+  pityRound=pick.idx;pityWord=pick.word;
+  bd=Array.from({length:N},()=>Array(N).fill(0));
+  uw=new Set();uw.add(pick.word.toLowerCase());
+  spawnT(true);spawnT(true);
+  $('msg').textContent='';
+  let inp=$('guess-input');inp.maxLength=wl;inp.value='';
+  renderG();updH();updWP();dbgR();
+}
+function dbgUnlockCol(){$('collection-btn').style.display='block';dbgR();}
+function dbgUnlockSkulls(){
+  if(!hskull){hskull=true;localStorage.setItem('wt_won_skull','1');}
+  if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}
+  updateSkullToggle();
+  alert('Skulls Realm unlocked! Click the 💀💀 button to enter.');
+  dbgR();
+}
+
+// ── EVENTS ────────────────────────────────────────────────────────────────────
+$('guess-btn').onclick=()=>{
+  let v=$('guess-input').value;
+  if(v.toUpperCase()==='DEBUG'||v.toUpperCase()==='DBUG'){$('guess-input').value='';dbgToggle();return;}
+  if(v.toUpperCase()==='SKULLS'&&hskull&&mode!==2&&ri===0&&wh.length===0){
+    $('guess-input').value='';setMode(2);newGame();return;
+  }
+  if(v.toUpperCase()==='NEXT'&&mode===0&&ri===0&&wh.length===0){
+    $('guess-input').value='';
+    if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}
+    setMode(1);newGame();return;
+  }
+  if(go||res)return;
+  if(v.length<wl){$('msg').textContent='Must be '+wl+' letters.';return;}
+  $('msg').textContent='';
+  if(v.toUpperCase()===wd)completeR('guess');else failG(v);
+};
+$('guess-input').addEventListener('keydown',e=>{if(e.key==='Enter')$('guess-btn').click();});
+$('new-btn').onclick=newGame;
+$('skull-toggle').onclick=()=>{
+  if(hskull){
+    // cycle: base->skull->skulls->base
+    setMode((mode+1)%3);
+  } else {
+    setMode(mode===0?1:0);
+  }
+  newGame();
+};
+$('collection-btn').onclick=openCollection;
+$('col-close').onclick=()=>$('col-overlay').classList.remove('show');
+$('col-overlay').onclick=e=>{if(e.target===$('col-overlay'))$('col-overlay').classList.remove('show');};
+document.addEventListener('keydown',e=>{
+  if(document.activeElement===$('guess-input'))return;
+  const m={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',a:'left',d:'right',w:'up',s:'down'};
+  let d=m[e.key];if(d){e.preventDefault();e.stopPropagation();move(d);}
+});
+let tx=0,ty=0;const gw=$('grid-wrap');
+gw.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:false});
+gw.addEventListener('touchmove',e=>{e.preventDefault();},{passive:false});
+gw.addEventListener('touchend',e=>{
+  let dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)<20&&Math.abs(dy)<20)return;
+  if(Math.abs(dx)>Math.abs(dy))move(dx>0?'right':'left');else move(dy>0?'down':'up');
+},{passive:false});
+newGame();
+</script></body></html>
