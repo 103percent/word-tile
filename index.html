@@ -739,8 +739,8 @@ function showEnd(won){
   $('modal-title').textContent=won?'You did it! 🏆':'Game over \xb7 Round '+cr+'/'+RL.length;
   $('modal-body').innerHTML=body;$('modal-word-history').innerHTML=buildWH();
   $('modal-input').style.display='none';$('share-btn').style.display='block';
-  let nr=$('next-reveal');nr.style.display=(won&&mode===0&&hall&&wh.length===RL.length)||(won&&mode===0&&!hall)?'block':'none';
-  let sr=$('skulls-reveal');sr.style.display=(won&&mode===1&&hskull&&wh.length===RL.length)?'block':'none';
+  let nr=$('next-reveal');if(nr)nr.style.display=(won&&mode===0&&hall&&wh.length===RL.length)||(won&&mode===0&&!hall)?'block':'none';
+  let sr=$('skulls-reveal');if(sr)sr.style.display=(won&&mode===1&&hskull&&wh.length===RL.length)?'block':'none';
   let btn=$('modal-btn');btn.textContent='Play again';
   btn.onclick=()=>{$('overlay').classList.remove('show');newGame();};
   $('overlay').classList.add('show');
