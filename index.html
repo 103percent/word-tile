@@ -485,8 +485,14 @@ function spawnSkull(cb){
   },50);
 }
 
+function setLocked(locked){
+  $('guess-input').disabled=locked;
+  $('guess-btn').disabled=locked;
+}
+
 function completeR(how){
   if(wh.length>ri){res=false;return;}
+  setLocked(true);
   const wlSnap=wl,mc=lm.filter(v=>!v).length,early=mc>0,bonus=GB+(early?EB*mc:0);
   sc+=bonus;saveBest();updH();
   let animal=checkAnimal(wd);
@@ -496,8 +502,8 @@ function completeR(how){
   if(!h9&&wlSnap===9){h9=true;localStorage.setItem('wt_won_nine','1');$('rule-return').style.display='block';}
   const isFinal=ri===RL.length-1;
   clearLT(()=>{
-    if(skm){spawnSkull(()=>{if(isFinal){if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}showEnd(true);}else{ri++;startRound();renderG();}});}
-    else{if(isFinal){if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}showEnd(true);}else{ri++;startRound();renderG();}}
+    if(skm){spawnSkull(()=>{if(isFinal){if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}showEnd(true);}else{ri++;startRound();setLocked(false);renderG();}});}
+    else{if(isFinal){if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}showEnd(true);}else{ri++;startRound();setLocked(false);renderG();}}
   });
 }
 
