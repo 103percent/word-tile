@@ -3,97 +3,123 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#faf8f0;color:#333;min-height:100vh;display:flex;justify-content:center;padding:20px;transition:background .5s,color .5s}
 body.skull{background:#1a1a2e;color:#ccc}
+body.skulls{background:#0d0010;color:#ccc}
 #app{width:100%;max-width:420px;user-select:none}
 h1{font-size:22px;font-weight:700;color:#776e65;margin-bottom:12px;transition:color .5s}
 body.skull h1{color:#a89ec9}
+body.skulls h1{color:#ff6ec7}
 #header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
 #scores{display:flex;gap:8px}
 .score-box{background:#bbada0;border-radius:6px;padding:4px 14px;text-align:center;min-width:72px;transition:background .5s}
 body.skull .score-box{background:#2d2b55}
+body.skulls .score-box{background:#3a0040}
 .score-label{font-size:11px;color:#eee4da;text-transform:uppercase;letter-spacing:.05em}
 .score-val{font-size:20px;font-weight:600;color:#fff}
 #header-btns{display:flex;gap:6px;align-items:center}
 #new-btn{padding:6px 14px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:background .5s}
 body.skull #new-btn{background:#4a3f7a}
+body.skulls #new-btn{background:#6a0080}
 #skull-toggle{padding:6px 10px;border:none;border-radius:6px;background:#2d2b55;color:#fff;cursor:pointer;font-size:16px;display:none;transition:background .5s}
 #skull-toggle.active{background:#6a3fa0}
+#skull-toggle.skulls-active{background:#9a00c0;letter-spacing:-2px}
 #wp-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 #word-progress{display:flex;align-items:center;flex-wrap:nowrap;flex:1}
 #collection-btn{padding:6px 10px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:16px;display:none;flex-shrink:0;transition:background .5s}
 body.skull #collection-btn{background:#4a3f7a}
+body.skulls #collection-btn{background:#6a0080}
 .letter-slot{flex:0 0 auto;width:36px;height:40px;border-radius:4px;border:1px solid #bbada0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:#cdc1b4;color:#776e65;transition:background .3s,color .3s,transform .3s;margin-right:5px}
 .letter-slot:last-child{margin-right:0}
 .letter-slot.revealed{background:#B7791F;color:#fff;border-color:#B7791F;transform:scale(1.1)}
 body.skull .letter-slot{background:#2d2b55;border-color:#4a3f7a;color:#a89ec9}
 body.skull .letter-slot.revealed{background:#6a3fa0;border-color:#6a3fa0;color:#fff}
+body.skulls .letter-slot{background:#3a0040;border-color:#6a0080;color:#ff9ef0}
+body.skulls .letter-slot.revealed{background:#9a00c0;border-color:#9a00c0;color:#fff}
 #word-progress.len-7 .letter-slot{width:32px;height:36px;font-size:16px;margin-right:4px}
 #word-progress.len-8 .letter-slot{width:29px;height:34px;font-size:15px;margin-right:4px}
 #word-progress.len-9 .letter-slot{width:27px;height:32px;font-size:14px;margin-right:3px}
 #guess-row{display:flex;gap:8px;align-items:center;margin:10px 0}
 #guess-input{padding:7px 10px;border:1px solid #bbada0;border-radius:6px;font-size:15px;background:#fff;color:#333;width:100%;text-transform:uppercase;letter-spacing:.08em;transition:background .5s,border-color .5s,color .5s}
 body.skull #guess-input{background:#2d2b55;border-color:#4a3f7a;color:#e0d8ff}
+body.skulls #guess-input{background:#3a0040;border-color:#6a0080;color:#ffd0ff}
 #guess-btn{padding:7px 16px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap;transition:background .5s}
 body.skull #guess-btn{background:#4a3f7a}
+body.skulls #guess-btn{background:#6a0080}
 #msg{font-size:12px;color:#a08060;margin-top:4px;min-height:16px}
 #grid-wrap{width:100%;margin-bottom:14px}
 #grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#bbada0;border-radius:10px;padding:8px;transition:background .5s}
 body.skull #grid{background:#2d2b55}
+body.skulls #grid{background:#3a0040}
 .cell{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;background:#cdc1b4;color:#776e65;transition:background .3s}
 body.skull .cell{background:#1e1c3a;color:#7a7a9a}
+body.skulls .cell{background:#1a0020;color:#9a6aaa}
 .cell.v2{background:#eee4da;color:#776e65}.cell.v4{background:#ede0c8;color:#776e65}.cell.v8{background:#f2b179;color:#fff}.cell.v16{background:#f59563;color:#fff}.cell.v32{background:#f67c5f;color:#fff}.cell.v64{background:#f65e3b;color:#fff}.cell.v128{background:#edc22e;color:#fff;font-size:22px}.cell.vhigh{background:#3c3489;color:#fff;font-size:18px}
 .cell.letter{background:#B7791F;color:#fff;font-size:26px;font-weight:800;border-radius:8px}
 .cell.skull{background:#3a1a4a;color:#fff;font-size:26px;border-radius:8px;border:1px solid #6a3fa0}
+.cell.dskull{background:#6a0080;color:#fff;font-size:18px;border-radius:8px;border:2px solid #ff6ec7;letter-spacing:-2px}
 body.skull .cell.v2{background:#2a2745;color:#a89ec9}body.skull .cell.v4{background:#312e5a;color:#a89ec9}body.skull .cell.v8{background:#c4845a;color:#fff}body.skull .cell.v16{background:#b06040;color:#fff}body.skull .cell.v32{background:#a04535;color:#fff}body.skull .cell.v64{background:#903020;color:#fff}body.skull .cell.v128{background:#b09020;color:#fff;font-size:22px}body.skull .cell.vhigh{background:#2a1a6a;color:#fff;font-size:18px}body.skull .cell.letter{background:#6a3fa0;color:#fff}
+body.skulls .cell.v2{background:#2a0030;color:#ff9ef0}body.skulls .cell.v4{background:#3a0045;color:#ff9ef0}body.skulls .cell.v8{background:#c4845a;color:#fff}body.skulls .cell.v16{background:#b06040;color:#fff}body.skulls .cell.v32{background:#a04535;color:#fff}body.skulls .cell.v64{background:#903020;color:#fff}body.skulls .cell.v128{background:#b09020;color:#fff;font-size:22px}body.skulls .cell.vhigh{background:#4a006a;color:#fff;font-size:18px}body.skulls .cell.letter{background:#9a00c0;color:#fff}body.skulls .cell.skull{background:#6a0080;border-color:#ff6ec7}body.skulls .cell.dskull{background:#9a00c0;border-color:#fff}
 @keyframes spawn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 @keyframes merge{0%{transform:scale(1)}35%{transform:scale(1.25)}65%{transform:scale(0.9)}100%{transform:scale(1)}}
 @keyframes letterReveal{0%{transform:scale(0) rotate(-15deg);opacity:0}55%{transform:scale(1.35) rotate(5deg);opacity:1}78%{transform:scale(0.88) rotate(-2deg)}100%{transform:scale(1) rotate(0)}}
 @keyframes letterClear{0%{transform:scale(1);opacity:1}100%{transform:scale(0);opacity:0}}
 @keyframes skullMerge{0%{transform:scale(1)}30%{transform:scale(1.3) rotate(10deg)}60%{transform:scale(0.8)}100%{transform:scale(0);opacity:0}}
+@keyframes dskullMerge{0%{transform:scale(1)}20%{transform:scale(1.4) rotate(-10deg)}50%{transform:scale(0.7) rotate(10deg)}100%{transform:scale(0);opacity:0}}
 @keyframes skullHop{0%{transform:scale(0) translateY(20px);opacity:0}40%{transform:scale(1.3) translateY(-12px);opacity:1}65%{transform:scale(0.85) translateY(6px)}80%{transform:scale(1.1) translateY(-4px)}100%{transform:scale(1) translateY(0);opacity:1}}
+@keyframes dskullSpawn{0%{transform:scale(0) rotate(-30deg);opacity:0}50%{transform:scale(1.4) rotate(10deg);opacity:1}75%{transform:scale(0.85) rotate(-5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes animalPop{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.3) rotate(5deg);opacity:1}80%{transform:scale(0.9)}100%{transform:scale(1) rotate(0);opacity:1}}
 .cell.anim-spawn{animation:spawn .18s cubic-bezier(.34,1.56,.64,1) forwards}
 .cell.anim-merge{animation:merge .22s cubic-bezier(.34,1.56,.64,1) forwards}
 .cell.anim-letter{animation:letterReveal .38s cubic-bezier(.34,1.56,.64,1) forwards}
 .cell.anim-clear{animation:letterClear .25s ease-in forwards}
 .cell.anim-skull-merge{animation:skullMerge .35s ease-in forwards}
+.cell.anim-dskull-merge{animation:dskullMerge .45s ease-in forwards}
 .cell.anim-skull-hop{animation:skullHop .7s cubic-bezier(.34,1.56,.64,1) forwards}
+.cell.anim-dskull-spawn{animation:dskullSpawn .5s cubic-bezier(.34,1.56,.64,1) forwards}
 #score-popup{position:fixed;pointer-events:none;font-size:18px;font-weight:700;color:#edc22e;text-shadow:0 1px 4px rgba(0,0,0,.2);opacity:0;z-index:50}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-44px)}}
 .float{animation:floatUp .75s ease-out forwards}
-#rules,#rules-skull{font-size:13px;color:#8f7a66;line-height:1.7;border-top:1px solid #d4c9be;padding-top:12px;margin-top:4px;transition:color .5s,border-color .5s}
+#rules,#rules-skull,#rules-skulls{font-size:13px;color:#8f7a66;line-height:1.7;border-top:1px solid #d4c9be;padding-top:12px;margin-top:4px;transition:color .5s,border-color .5s}
 body.skull #rules-skull{color:#7a7a9a;border-color:#2d2b55}
+body.skulls #rules-skulls{color:#cc80ff;border-color:#3a0040}
 .dbg-btn{padding:5px 10px;border:1px solid #e07;border-radius:5px;background:#fff;color:#e07;cursor:pointer;font-size:12px;font-weight:600}
 .dbg-btn:hover{background:#fdd}
 #overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
 #overlay.show{display:flex}
 #modal{background:#faf8f0;border-radius:12px;padding:1.5rem;text-align:center;max-width:340px;width:92%;max-height:90vh;overflow-y:auto;transition:background .5s}
 body.skull #modal{background:#1e1c3a;color:#ccc}
+body.skulls #modal{background:#1a0020;color:#ffd0ff}
 #modal h2{font-size:22px;font-weight:700;margin-bottom:6px;color:#333;transition:color .5s}
 body.skull #modal h2{color:#e0d8ff}
+body.skulls #modal h2{color:#ff6ec7}
 #modal p{font-size:14px;color:#776e65;margin-bottom:1rem;line-height:1.6;transition:color .5s}
-body.skull #modal p{color:#a89ec9}
+body.skull #modal p,body.skulls #modal p{color:#a89ec9}
 #modal-input{padding:8px 12px;border:1px solid #bbada0;border-radius:6px;font-size:16px;width:100%;margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em;transition:background .5s,border-color .5s,color .5s}
 body.skull #modal-input{background:#2d2b55;border-color:#4a3f7a;color:#e0d8ff}
+body.skulls #modal-input{background:#3a0040;border-color:#6a0080;color:#ffd0ff}
 #modal-btn{padding:8px 24px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:15px;font-weight:600;width:100%;margin-bottom:8px;transition:background .5s}
 body.skull #modal-btn{background:#4a3f7a}
+body.skulls #modal-btn{background:#6a0080}
 #share-btn{padding:8px 24px;border:1px solid #bbada0;border-radius:6px;background:#faf8f0;color:#776e65;cursor:pointer;font-size:14px;font-weight:600;width:100%;margin-bottom:8px;transition:background .5s,border-color .5s,color .5s}
 body.skull #share-btn{background:#1e1c3a;border-color:#4a3f7a;color:#a89ec9}
-#share-btn:hover{background:#eee4da}body.skull #share-btn:hover{background:#2d2b55}
+body.skulls #share-btn{background:#1a0020;border-color:#6a0080;color:#ff9ef0}
+#share-btn:hover{background:#eee4da}body.skull #share-btn:hover{background:#2d2b55}body.skulls #share-btn:hover{background:#3a0040}
 .word-history{text-align:left;margin:10px 0;border-top:1px solid #d4c9be;padding-top:10px}
-body.skull .word-history{border-color:#2d2b55}
+body.skull .word-history,body.skulls .word-history{border-color:#2d2b55}
 .word-history-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;color:#555}
-body.skull .word-history-row{color:#a89ec9}
+body.skull .word-history-row,body.skulls .word-history-row{color:#a89ec9}
 .word-history-row .wh-icon{font-size:16px;width:24px;text-align:center}
 .word-history-row .wh-word{font-weight:700;color:#B7791F;letter-spacing:.05em}
 body.skull .word-history-row .wh-word{color:#a060e0}
+body.skulls .word-history-row .wh-word{color:#ff6ec7}
 .word-history-row .wh-tag{font-size:11px;color:#aaa;margin-left:2px}
 #next-reveal{font-size:20px;font-weight:700;color:#B7791F;margin-top:12px;display:none}
 #col-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center}
 #col-overlay.show{display:flex}
 #col-modal{background:#faf8f0;border-radius:12px;padding:1.5rem;max-width:380px;width:92%;max-height:88vh;overflow-y:auto;transition:background .5s}
 body.skull #col-modal{background:#1e1c3a}
+body.skulls #col-modal{background:#1a0020}
 #col-modal h2{font-size:20px;font-weight:700;color:#776e65;margin-bottom:4px}
-body.skull #col-modal h2{color:#a89ec9}
+body.skull #col-modal h2,body.skulls #col-modal h2{color:#a89ec9}
 #col-subtitle{font-size:12px;color:#aaa;margin-bottom:12px}
 #col-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
 .col-cell{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:24px;background:#e8e0d5;border:1px solid #d4c9be;position:relative}
@@ -102,11 +128,14 @@ body.skull #col-modal h2{color:#a89ec9}
 .col-cell .col-hint{position:absolute;bottom:3px;right:5px;font-size:9px;font-weight:700;color:#aaa}
 body.skull .col-cell{background:#2a2745;border-color:#4a3f7a}
 body.skull .col-cell.skull-ex{background:#3a1a4a;border-color:#6a3fa0}
+body.skulls .col-cell{background:#2a0030;border-color:#6a0080}
+body.skulls .col-cell.skull-ex{background:#3a0045;border-color:#9a00c0}
 #col-close{padding:8px 24px;border:none;border-radius:6px;background:#8f7a66;color:#fff;cursor:pointer;font-size:14px;font-weight:600;width:100%}
-body.skull #col-close{background:#4a3f7a}
+body.skull #col-close,body.skulls #col-close{background:#4a3f7a}
 #animal-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:#333;color:#fff;border-radius:20px;padding:10px 20px;font-size:15px;font-weight:600;z-index:300;opacity:0;transition:opacity .3s,transform .4s;pointer-events:none;white-space:nowrap}
 #animal-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 body.skull #animal-toast{background:#6a3fa0}
+body.skulls #animal-toast{background:#9a00c0}
 </style></head><body>
 <div id=app>
   <div id=header>
@@ -145,6 +174,12 @@ body.skull #animal-toast{background:#6a3fa0}
     <span id=rule-skull-appear style=display:none>💀 After each correct round, a skull tile will haunt an empty cell on the board. It blocks movement like a letter tile.</span><br>
     <span id=rule-skull-merge style=display:none>⚔️ Slide two skull tiles together to destroy them both — and score 2,000 points.</span>
   </div>
+  <div id=rules-skulls style=display:none>
+    💀💀 <strong>Welcome to Skulls Realm</strong><br>
+    You thought one skull was bad?<br>
+    <span id=rule-skulls-appear style=display:none>💀 After each round, a skull haunts the board as before.</span><br>
+    <span id=rule-skulls-merge style=display:none>⚔️ Two skulls merge into a <strong>double skull</strong>. Merge two double skulls to destroy them — scoring 5,000 points.</span>
+  </div>
   <div id=debug-panel style=display:none;margin-top:14px;border:1px dashed #e07;border-radius:8px;padding:10px;font-size:12px;color:#333;background:#fff8fe>
     <div style=font-weight:700;color:#e07;margin-bottom:8px>⚠️ DEBUG MODE</div>
     <div id=debug-info style=font-family:monospace;font-size:11px;margin-bottom:10px;line-height:1.8></div>
@@ -157,6 +192,7 @@ body.skull #animal-toast{background:#6a3fa0}
       <button onclick=dbgGiveAnimal() class=dbg-btn>Give animal</button>
       <button onclick=dbgAnimalRound() class=dbg-btn>Animal round</button>
       <button onclick=dbgUnlockCol() class=dbg-btn>Unlock collection</button>
+      <button onclick=dbgUnlockSkulls() class=dbg-btn>Unlock Skulls Realm</button>
       <button onclick=dbgToggle() class=dbg-btn style=background:#fdd;border-color:#e07>Exit debug</button>
     </div>
   </div>
@@ -253,12 +289,13 @@ const _w={
   9:["abandoned","absurdity","acclaimed","adventure","aftermath","algorithm","ambiguity","anonymous","architect","assurance","attention","authentic","awareness","beautiful","benchmark","blackbird","blackmail","blueprint","bombshell","boundless","brainwave","breakdown","brickwork","brilliant","broadcast","buccaneer","butterfly","calculate","candlelit","captivate","carpentry","character","chronicle","circulate","cityscape","clockwise","coastline","combatant","commander","community","composure","concerned","confident","conqueror","conscript","courtyard","crossfire","crosswind","crumbling","custodian","cutthroat","dauntless","dayspring","dedicated","defendant","delighted","departure","deserving","desperate","developed","difficult","dimension","direction","discovery","driftwood","earthworm","elaborate","elevation","elsewhere","emotional","encounter","encourage","endurance","establish","evergreen","excellent","exuberant","faultless","firelight","firmament","flintlock","formation","fortified","framework","freelance","frequency","frontline","frostbite","fulfilled","gladiator","goldfinch","graduated","grapevine","greatness","handcraft","happening","harbinger","heartbeat","heartfelt","hierarchy","highlands","horseback","hurricane","identical","implement","important","impressed","inclusion","ingenuity","innermost","intellect","isolation","justified","keystroke","knowledge","labyrinth","landscape","legendary","lightning","longevity","magnitude","marauding","medallion","migration","milestone","monastery","moonshine","motivated","mountains","navigator","nightfall","notorious","objective","obstinate","outnumber","overnight","overpower","ownership","patchwork","peacetime","persevere","placement","planetary","populated","potential","precision","privilege","prominent","reckoning","reconcile","reinforce","rejoicing","relevance","remainder","resilient","respected","restraint","righteous","ruination","saltwater","sanctuary","scattered","seafaring","shipwreck","shoreline","signature","situation","snowflake","sovereign","spectacle","starlight","statement","steadfast","stillness","storyline","structure","stumbling","submerged","supremacy","surrender","tidewater","tradition","transport","treatment","turbulent","uncertain","uncovered","undaunted","unfailing","unlimited","unsettled","vanishing","venturing","versatile","vigilance","wandering","waterfall","welcoming","wholesome","widescale","willpower","windstorm","withstand","wonderful","worldwide","zealously"].filter(w=>w.length===9)
 };
 
-const RL=[4,5,6,7,8,9,8,7,6,5,4],N=4,TR=128,GB=5000,EB=1000,PB=500,LB=100,SMB=2000,SK='💀';
-const PITY_BASE=5,PITY_FAIL=2;
+const RL=[4,5,6,7,8,9,8,7,6,5,4],N=4,TR=128,GB=5000,EB=1000,PB=500,LB=100,SMB=2000,DSMB=5000,SK='💀',DSK='💀💀';
+const PITY_BASE=5,PITY_FAIL=0;
 const $=id=>document.getElementById(id);
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function isSk(v){return v===SK}
-function isLt(v){return typeof v==='string'&&v!==SK}
+function isDSk(v){return v===DSK}
+function isLt(v){return typeof v==='string'&&v!==SK&&v!==DSK}
 function isSp(v){return typeof v==='string'}
 function lOff(a,b){if(a.length!==b.length)return Infinity;let n=0;for(let i=0;i<a.length;i++)if(a[i]!==b[i])n++;return n;}
 
@@ -273,14 +310,21 @@ let collected=loadCol();
 let pityCounter=loadPity(),pityRound=-1,pityWord=null,pityPenaltyApplied=false;
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let bd,sc,best=parseInt(localStorage.getItem('wt_best')||'0'),skBest=parseInt(localStorage.getItem('wt_skull_best')||'0'),
-    wd,wl,lm,go,res=false,aq=[],tsc=0,lc=0,smc=0,ri=0,uw=new Set(),wh=[],
+let bd,sc,best=parseInt(localStorage.getItem('wt_best')||'0'),
+    skBest=parseInt(localStorage.getItem('wt_skull_best')||'0'),
+    sksBest=parseInt(localStorage.getItem('wt_skulls_best')||'0'),
+    wd,wl,lm,go,res=false,aq=[],tsc=0,lc=0,smc=0,dsmc=0,ri=0,uw=new Set(),wh=[],
     hrnd=localStorage.getItem('wt_won_round')==='1',
     h9=localStorage.getItem('wt_won_nine')==='1',
     hall=localStorage.getItem('wt_won_all')==='1',
+    hskull=localStorage.getItem('wt_won_skull')==='1',
     hsa=localStorage.getItem('wt_skull_appear')==='1',
     hsm=localStorage.getItem('wt_skull_merge')==='1',
-    skm=false,dbg=false;
+    mode=0, // 0=base 1=skull 2=skulls
+    dbg=false;
+
+function skm(){return mode>=1;}
+function skms(){return mode===2;}
 
 if(hrnd)$('rule-progression').style.display='block';
 if(h9)$('rule-return').style.display='block';
@@ -288,11 +332,22 @@ if(hall)$('skull-toggle').style.display='block';
 if(hsa)$('rule-skull-appear').style.display='block';
 if(hsm)$('rule-skull-merge').style.display='block';
 if(collected.length>0)$('collection-btn').style.display='block';
+updateSkullToggle();
+
+// ── SKULL TOGGLE UI ───────────────────────────────────────────────────────────
+function updateSkullToggle(){
+  let btn=$('skull-toggle');
+  btn.textContent=mode===2?'💀💀':'💀';
+  btn.title=hskull?'Toggle Skull / Skulls Realm':'Toggle Skull Realm';
+  btn.className='';
+  if(mode===1)btn.classList.add('active');
+  else if(mode===2)btn.classList.add('skulls-active');
+}
 
 // ── PITY ──────────────────────────────────────────────────────────────────────
 function setupPity(){
   pityRound=-1;pityWord=null;pityPenaltyApplied=false;
-  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm));
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
   if(!pool.length||pityCounter>0)return;
   let animal=pool[rnd(0,pool.length-1)];
   let candidates=[];
@@ -300,7 +355,7 @@ function setupPity(){
     animal.triggers.forEach(t=>{
       let w=t.toLowerCase();
       let inBase=_w[len]&&_w[len].includes(w);
-      let inExtra=skm&&SKULL_EXTRAS[len]&&SKULL_EXTRAS[len].map(x=>x.toLowerCase()).includes(w);
+      let inExtra=skm()&&SKULL_EXTRAS[len]&&SKULL_EXTRAS[len].map(x=>x.toLowerCase()).includes(w);
       if(inBase||inExtra)candidates.push({idx,word:t.toUpperCase()});
     });
   });
@@ -317,7 +372,7 @@ function applyPityPenalty(){
 function checkAnimal(word){
   let id=WORD_TO_ANIMAL[word.toUpperCase()];if(!id)return null;
   let animal=ANIMALS.find(a=>a.id===id);
-  if(!animal||animal.skullOnly&&!skm)return null;
+  if(!animal||animal.skullOnly&&!skm())return null;
   if(collected.includes(id))return null;
   return animal;
 }
@@ -350,19 +405,21 @@ function openCollection(){
   $('col-overlay').classList.add('show');
 }
 
-// ── GAME ──────────────────────────────────────────────────────────────────────
-function setSkull(on){
-  skm=on;document.body.classList.toggle('skull',on);
-  document.querySelector('h1').textContent=on?'Skull Realm':'Word Tile';
-  $('skull-toggle').classList.toggle('active',on);
-  $('rules').style.display=on?'none':'block';
-  $('rules-skull').style.display=on?'block':'none';
+// ── MODE ──────────────────────────────────────────────────────────────────────
+function setMode(m){
+  mode=m;
+  document.body.className=m===2?'skulls':m===1?'skull':'';
+  document.querySelector('h1').textContent=m===2?'Skulls Realm':m===1?'Skull Realm':'Word Tile';
+  $('rules').style.display=m===0?'block':'none';
+  $('rules-skull').style.display=m===1?'block':'none';
+  $('rules-skulls').style.display=m===2?'block':'none';
+  updateSkullToggle();
 }
 
 function pickW(len){
   if(pityRound===ri&&pityWord){uw.add(pityWord.toLowerCase());return pityWord;}
   let base=_w[len]?[..._w[len]]:[];
-  let extras=skm&&SKULL_EXTRAS[len]?SKULL_EXTRAS[len].map(w=>w.toLowerCase()):[];
+  let extras=skm()&&SKULL_EXTRAS[len]?SKULL_EXTRAS[len].map(w=>w.toLowerCase()):[];
   let pool=[...base,...extras].filter(w=>!uw.has(w));
   if(!pool.length){uw.clear();pool=[...base,...extras];}
   if(!pool.length){console.error('No words len '+len);return'ERROR';}
@@ -371,15 +428,17 @@ function pickW(len){
 
 function newGame(){
   bd=Array.from({length:N},()=>Array(N).fill(0));
-  sc=0;tsc=0;lc=0;smc=0;go=false;res=false;aq=[];ri=0;uw=new Set();wh=[];
+  sc=0;tsc=0;lc=0;smc=0;dsmc=0;go=false;res=false;aq=[];ri=0;uw=new Set();wh=[];
   setupPity();startRound();spawnT(true);spawnT(true);renderG();updH();
 }
 
 function startRound(){
   wl=RL[ri];wd=pickW(wl);lm=Array(wl).fill(false);
   let inp=$('guess-input');inp.maxLength=wl;inp.value='';inp.placeholder='TYPE YOUR GUESS';
-  $('msg').textContent='';updWP();
+  $('msg').textContent='';setLocked(false);updWP();
 }
+
+function setLocked(locked){$('guess-input').disabled=locked;$('guess-btn').disabled=locked;}
 
 function spawnT(silent){
   let e=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(bd[r][c]===0)e.push([r,c]);
@@ -399,6 +458,7 @@ function slideR(row){
   let arr=row.filter(v=>v!==0),out=[],i=0;
   while(i<arr.length){
     if(i+1<arr.length&&!isSp(arr[i])&&arr[i]===arr[i+1]){
+      // number merge
       let val=arr[i]*2,nl=false;
       if(val===TR){let ch=revNext();if(ch){val=ch;nl=true;}}
       out.push(val);
@@ -407,9 +467,22 @@ function slideR(row){
       else aq.push({type:'mergeIdx',idx:out.length-1});
       i+=2;
     }else if(i+1<arr.length&&isSk(arr[i])&&isSk(arr[i+1])){
+      // skull+skull
       sc+=SMB;smc++;saveBest();
-      aq.push({type:'skullMerge',idx:out.length});
+      if(skms()){
+        // in Skulls Realm: merge into double skull
+        out.push(DSK);
+        aq.push({type:'dskullSpawn',idx:out.length-1});
+      } else {
+        // in Skull Realm: destroy both
+        aq.push({type:'skullMerge',idx:out.length});
+      }
       if(!hsm){hsm=true;localStorage.setItem('wt_skull_merge','1');$('rule-skull-merge').style.display='block';}
+      i+=2;
+    }else if(i+1<arr.length&&isDSk(arr[i])&&isDSk(arr[i+1])){
+      // double skull + double skull = destroy, 5000pts
+      sc+=DSMB;dsmc++;saveBest();
+      aq.push({type:'dskullMerge',idx:out.length});
       i+=2;
     }else{out.push(arr[i]);i++;}
   }
@@ -422,6 +495,8 @@ function procR(row,ri2,isC,ci,rev,ma){
   aq.forEach(a=>{
     let pos=rev?N-1-a.idx:a.idx;
     if(a.type==='skullMerge')ma.push({type:'skullMerge',r:isC?pos:ri2,c:isC?ci:pos});
+    else if(a.type==='dskullMerge')ma.push({type:'dskullMerge',r:isC?pos:ri2,c:isC?ci:pos});
+    else if(a.type==='dskullSpawn')ma.push({type:'dskullSpawn',r:isC?pos:ri2,c:isC?ci:pos});
     else ma.push({type:a.type==='mergeIdx'?'merge':'letter',r:isC?pos:ri2,c:isC?ci:pos});
   });
   aq=oq;return{res:res2,changed:res2.join()!==prev.join()};
@@ -443,8 +518,11 @@ function move(dir){
 }
 
 function saveBest(){
-  if(skm){if(sc>skBest){skBest=sc;localStorage.setItem('wt_skull_best',skBest);}let ov=Math.max(best,skBest);if(ov>best){best=ov;localStorage.setItem('wt_best',best);}}
+  let overall=Math.max(best,skBest,sksBest);
+  if(mode===2){if(sc>sksBest){sksBest=sc;localStorage.setItem('wt_skulls_best',sksBest);}overall=Math.max(best,skBest,sksBest);}
+  else if(mode===1){if(sc>skBest){skBest=sc;localStorage.setItem('wt_skull_best',skBest);}overall=Math.max(best,skBest);}
   else{if(sc>best){best=sc;localStorage.setItem('wt_best',best);}}
+  if(overall>best){best=overall;localStorage.setItem('wt_best',best);}
 }
 
 function canMove(){
@@ -453,6 +531,7 @@ function canMove(){
       if(bd[r][c]===0)return true;
       let v=bd[r][c];
       if(isSk(v)){if(c+1<N&&isSk(bd[r][c+1]))return true;if(r+1<N&&isSk(bd[r+1][c]))return true;continue;}
+      if(isDSk(v)){if(c+1<N&&isDSk(bd[r][c+1]))return true;if(r+1<N&&isDSk(bd[r+1][c]))return true;continue;}
       if(isSp(v))continue;
       if(c+1<N&&!isSp(bd[r][c+1])&&bd[r][c+1]===v)return true;
       if(r+1<N&&!isSp(bd[r+1][c])&&bd[r+1][c]===v)return true;
@@ -476,18 +555,16 @@ function spawnSkull(cb){
   if(!targets.length){res=false;cb();return;}
   let[sr,sc2]=targets[rnd(0,targets.length-1)];
   bd[sr][sc2]=SK;
-  if(!hsa){hsa=true;localStorage.setItem('wt_skull_appear','1');$('rule-skull-appear').style.display='block';}
+  if(!hsa){hsa=true;localStorage.setItem('wt_skull_appear','1');
+    $('rule-skull-appear').style.display='block';
+    if(skms())$('rule-skulls-appear').style.display='block';
+  }
   renderG();
   setTimeout(()=>{
     const g=$('grid');let el=g.children[sr*N+sc2];
     if(el){el.classList.remove('anim-skull-hop');void el.offsetWidth;el.classList.add('anim-skull-hop');}
     setTimeout(()=>{res=false;cb();},700);
   },50);
-}
-
-function setLocked(locked){
-  $('guess-input').disabled=locked;
-  $('guess-btn').disabled=locked;
 }
 
 function completeR(how){
@@ -502,8 +579,21 @@ function completeR(how){
   if(!h9&&wlSnap===9){h9=true;localStorage.setItem('wt_won_nine','1');$('rule-return').style.display='block';}
   const isFinal=ri===RL.length-1;
   clearLT(()=>{
-    if(skm){spawnSkull(()=>{if(isFinal){if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}showEnd(true);}else{ri++;startRound();setLocked(false);renderG();}});}
-    else{if(isFinal){if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}showEnd(true);}else{ri++;startRound();setLocked(false);renderG();}}
+    if(skm()){
+      spawnSkull(()=>{
+        if(isFinal){
+          // unlock logic
+          if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}
+          if(mode===1&&!hskull){hskull=true;localStorage.setItem('wt_won_skull','1');updateSkullToggle();}
+          showEnd(true);
+        } else {ri++;startRound();renderG();}
+      });
+    } else {
+      if(isFinal){
+        if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}
+        showEnd(true);
+      } else {ri++;startRound();renderG();}
+    }
   });
 }
 
@@ -516,7 +606,10 @@ function failG(guess){
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
-function tileClass(v){if(isSk(v))return'skull';if(isLt(v))return'letter';if(!v)return'';if(v<=TR)return'v'+v;return'vhigh';}
+function tileClass(v){
+  if(isSk(v))return'skull';if(isDSk(v))return'dskull';
+  if(isLt(v))return'letter';if(!v)return'';if(v<=TR)return'v'+v;return'vhigh';
+}
 
 function renderG(){
   const g=$('grid');g.innerHTML='';
@@ -527,11 +620,13 @@ function renderG(){
   requestAnimationFrame(()=>{
     aq.forEach(a=>{
       let el=g.children[a.r*N+a.c];if(!el)return;
-      el.classList.remove('anim-spawn','anim-merge','anim-letter','anim-skull-merge');void el.offsetWidth;
+      el.classList.remove('anim-spawn','anim-merge','anim-letter','anim-skull-merge','anim-dskull-merge','anim-dskull-spawn');void el.offsetWidth;
       if(a.type==='spawn')el.classList.add('anim-spawn');
       else if(a.type==='merge'){el.classList.add('anim-merge');showPop(el,'+'+bd[a.r][a.c].toLocaleString());}
       else if(a.type==='letter'){el.classList.add('anim-letter');showPop(el,'+LETTER!');}
       else if(a.type==='skullMerge'){el.classList.add('anim-skull-merge');showPop(el,'💀 +'+SMB);}
+      else if(a.type==='dskullSpawn'){el.classList.add('anim-dskull-spawn');showPop(el,'💀💀');}
+      else if(a.type==='dskullMerge'){el.classList.add('anim-dskull-merge');showPop(el,'💀💀 +'+DSMB);}
     });aq=[];
   });
 }
@@ -544,14 +639,15 @@ function showPop(el,text){
 
 function updH(){
   $('score-disp').textContent=sc.toLocaleString();
-  $('best-disp').textContent=Math.max(best,skBest).toLocaleString();
+  $('best-disp').textContent=Math.max(best,skBest,sksBest).toLocaleString();
 }
 
 function updWP(){
   let wp=$('word-progress');wp.innerHTML='';wp.className='';
   if(wl>=7)wp.classList.add('len-'+wl);
   let isPity=pityRound===ri&&pityWord===wd;
-  wp.style.filter=isPity?(skm?'drop-shadow(0 0 6px #a060e0)':'drop-shadow(0 0 6px #edc22e)'):'';
+  let glowCol=mode===2?'#ff6ec7':mode===1?'#a060e0':'#edc22e';
+  wp.style.filter=isPity?'drop-shadow(0 0 6px '+glowCol+')':'';
   for(let i=0;i<wl;i++){
     let s=document.createElement('div');
     s.className='letter-slot'+(lm[i]?' revealed':'');
@@ -574,11 +670,16 @@ function buildWH(){
   return h+'</div>';
 }
 
+function multiplier(){return mode===2?1.2:mode===1?1.1:1;}
+
 function scoreBD(){
   let gc=wh.filter(h=>h.how!=='auto'&&h.how!=='fail').length,tgb=gc*GB;
   let teb=wh.filter(h=>h.early).reduce((s,h)=>s+h.eb,0);
-  let tpb=wh.filter(h=>h.pity).length*PB,tlb=lc*LB,tsb=smc*SMB;
-  let sub=tsc+tlb+tgb+teb+tpb+tsb,final=skm?Math.round(sub*1.1):sub;
+  let tpb=wh.filter(h=>h.pity).length*PB,tlb=lc*LB,tsb=smc*SMB,tdsb=dsmc*DSMB;
+  let mul=multiplier();
+  let sub=tsc+tlb+tgb+teb+tpb+tsb+tdsb;
+  let final=Math.round(sub*mul);
+  let modeName=mode===2?'Skulls Realm 💀💀':mode===1?'Skull Realm 💀':'';
   return'<table style="width:100%;font-size:13px;color:#776e65;border-collapse:collapse;text-align:left;margin-top:8px">'+
     '<tr><td>Tile merges</td><td style="text-align:right">'+tsc.toLocaleString()+'</td></tr>'+
     '<tr><td>Letters unlocked ('+lc+' \xd7 '+LB+')</td><td style="text-align:right">+'+tlb.toLocaleString()+'</td></tr>'+
@@ -586,14 +687,16 @@ function scoreBD(){
     (teb>0?'<tr><td>Early guess bonuses 🎉</td><td style="text-align:right">+'+teb.toLocaleString()+'</td></tr>':'')+
     (tpb>0?'<tr><td>Near miss bonus 😬</td><td style="text-align:right">+'+tpb.toLocaleString()+'</td></tr>':'')+
     (tsb>0?'<tr><td>Skull merges 💀 ('+smc+' \xd7 '+SMB.toLocaleString()+')</td><td style="text-align:right">+'+tsb.toLocaleString()+'</td></tr>':'')+
-    (skm?'<tr><td style="color:#888;font-size:12px">Subtotal</td><td style="text-align:right;color:#888;font-size:12px">'+sub.toLocaleString()+'</td></tr>'+'<tr><td>Skull Realm bonus 💀</td><td style="text-align:right">\xd7 1.1</td></tr>':'')+
+    (tdsb>0?'<tr><td>Double skull merges 💀💀 ('+dsmc+' \xd7 '+DSMB.toLocaleString()+')</td><td style="text-align:right">+'+tdsb.toLocaleString()+'</td></tr>':'')+
+    (mode>0?'<tr><td style="color:#888;font-size:12px">Subtotal</td><td style="text-align:right;color:#888;font-size:12px">'+sub.toLocaleString()+'</td></tr>'+
+      '<tr><td>'+modeName+' bonus</td><td style="text-align:right">\xd7 '+mul+'</td></tr>':'')+
     '<tr style="font-weight:700;color:#333;border-top:1px solid #d4c9be"><td>Final score</td><td style="text-align:right">'+final.toLocaleString()+'</td></tr></table>';
 }
 
 function shareText(won){
-  let mode=skm?'💀 Skull Realm':'Word Tile';
+  let modeStr=mode===2?'💀💀 Skulls Realm':mode===1?'💀 Skull Realm':'Word Tile';
   let url=window.location.href.replace(/\/$/,'');
-  let lines=[mode+' '+(won?'🏆':'💀'),'Round '+wh.length+'/'+RL.length+' \xb7 '+sc.toLocaleString()+'pts',''];
+  let lines=[modeStr+' '+(won?'🏆':'💀'),'Round '+wh.length+'/'+RL.length+' \xb7 '+sc.toLocaleString()+'pts',''];
   wh.forEach(h=>{
     if(h.how==='fail')lines.push(hIcon(h.how)+' '+h.guess+' \u2192 '+h.word+(h.pity?' 😬':''));
     else lines.push(hIcon(h.how)+' '+h.word+(h.early?' (early - '+h.eb/EB+')':'')+(h.animal?' '+h.animal:''));
@@ -611,17 +714,17 @@ function shareResult(){
 
 function showEnd(won){
   go=true;applyPityPenalty();
-  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm));
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
   if(pool.length){pityCounter=Math.max(0,pityCounter-1);savePity(pityCounter);}
-  if(skm){sc=Math.round(sc*1.1);saveBest();}
+  if(mode>0){sc=Math.round(sc*multiplier());saveBest();}
   let cr=wh.length;
-  let body=won?(skm?'You conquered Skull Realm!':'Incredible — you conquered all eleven rounds!')+'<br>'
+  let body=won?(mode===2?'You conquered Skulls Realm! 💀💀':mode===1?'You conquered Skull Realm!':'Incredible — you conquered all eleven rounds!')+'<br>'
     :'You guessed <strong>'+wh[wh.length-1].guess+'</strong> — the word was <strong>'+wd+'</strong>.<br>';
   body+=scoreBD();
   $('modal-title').textContent=won?'You did it! 🏆':'Game over \xb7 Round '+cr+'/'+RL.length;
   $('modal-body').innerHTML=body;$('modal-word-history').innerHTML=buildWH();
   $('modal-input').style.display='none';$('share-btn').style.display='block';
-  let nr=$('next-reveal');nr.style.display=(won&&!skm&&hall&&wh.length===RL.length)||(won&&!hall)?'block':'none';
+  let nr=$('next-reveal');nr.style.display=(won&&mode===0&&hall&&wh.length===RL.length)||(won&&mode===0&&!hall)?'block':'none';
   let btn=$('modal-btn');btn.textContent='Play again';
   btn.onclick=()=>{$('overlay').classList.remove('show');newGame();};
   $('overlay').classList.add('show');
@@ -644,16 +747,18 @@ function showLC(){
 // ── DEBUG ─────────────────────────────────────────────────────────────────────
 function dbgToggle(){
   dbg=!dbg;$('debug-panel').style.display=dbg?'block':'none';
-  document.querySelector('h1').textContent=(skm?'Skull Realm':'Word Tile')+(dbg?' [DEBUG]':'');
+  let base=mode===2?'Skulls Realm':mode===1?'Skull Realm':'Word Tile';
+  document.querySelector('h1').textContent=base+(dbg?' [DEBUG]':'');
   if(dbg)dbgR();
 }
 function dbgR(){
   if(!dbg)return;let p=$('debug-info');if(!p)return;
-  let emp=0,sks=0;for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(bd[r][c]===0)emp++;if(isSk(bd[r][c]))sks++;}
+  let emp=0,sks=0,dsks=0;
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(bd[r][c]===0)emp++;if(isSk(bd[r][c]))sks++;if(isDSk(bd[r][c]))dsks++;}
   p.innerHTML='word: <b>'+wd+'</b> ('+wl+'L) \xb7 round: <b>'+(ri+1)+'/'+RL.length+'</b><br>'+
     'mask: <b>'+lm.map((v,i)=>v?wd[i]:'_').join('')+'</b> \xb7 revealed: <b>'+lm.filter(v=>v).length+'/'+wl+'</b><br>'+
     'score: <b>'+sc+'</b> \xb7 best: <b>'+best+'</b><br>'+
-    'empty: <b>'+emp+'</b> \xb7 skulls: <b>'+sks+'</b> \xb7 res: <b>'+res+'</b> \xb7 go: <b>'+go+'</b> \xb7 skm: <b>'+skm+'</b><br>'+
+    'empty: <b>'+emp+'</b> \xb7 skulls: <b>'+sks+'</b> \xb7 dskulls: <b>'+dsks+'</b> \xb7 res: <b>'+res+'</b> \xb7 go: <b>'+go+'</b> \xb7 mode: <b>'+mode+'</b><br>'+
     'collected: <b>'+collected.length+'/50</b> \xb7 pity: <b>'+pityCounter+'</b> \xb7 pityRound: <b>'+pityRound+'</b> \xb7 pityWord: <b>'+(pityWord||'\u2014')+'</b>';
 }
 function dbgRevealLetter(){if(go||res)return;let ch=revNext();if(ch){renderG();updWP();if(allRev()){res=true;setTimeout(()=>completeR('auto'),400);}}dbgR();}
@@ -662,13 +767,13 @@ function dbgFailRound(){if(go||res)return;failG('DEBUG');}
 function dbgFillBoard(){if(go||res)return;let v=2;for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(bd[r][c]===0){bd[r][c]=v;v=v===2?4:2;}}renderG();dbgR();}
 function dbgClearBoard(){if(go||res)return;for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(!isSp(bd[r][c]))bd[r][c]=0;}renderG();dbgR();}
 function dbgGiveAnimal(){
-  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm));
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
   if(!pool.length){alert('All available animals collected!');return;}
   collectAnimal(pool[rnd(0,pool.length-1)]);dbgR();
 }
 function dbgAnimalRound(){
   if(go||res)return;
-  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm));
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
   if(!pool.length){alert('All available animals collected!');return;}
   let candidates=[];
   pool.forEach(a=>{
@@ -676,7 +781,7 @@ function dbgAnimalRound(){
       a.triggers.forEach(t=>{
         let w=t.toLowerCase();
         let inBase=_w[len]&&_w[len].includes(w);
-        let inExtra=skm&&SKULL_EXTRAS[len]&&SKULL_EXTRAS[len].map(x=>x.toLowerCase()).includes(w);
+        let inExtra=skm()&&SKULL_EXTRAS[len]&&SKULL_EXTRAS[len].map(x=>x.toLowerCase()).includes(w);
         if(inBase||inExtra)candidates.push({word:t.toUpperCase(),idx,len});
       });
     });
@@ -693,15 +798,25 @@ function dbgAnimalRound(){
   renderG();updH();updWP();dbgR();
 }
 function dbgUnlockCol(){$('collection-btn').style.display='block';dbgR();}
+function dbgUnlockSkulls(){
+  if(!hskull){hskull=true;localStorage.setItem('wt_won_skull','1');}
+  if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}
+  updateSkullToggle();
+  alert('Skulls Realm unlocked! Click the 💀💀 button to enter.');
+  dbgR();
+}
 
 // ── EVENTS ────────────────────────────────────────────────────────────────────
 $('guess-btn').onclick=()=>{
   let v=$('guess-input').value;
   if(v.toUpperCase()==='DEBUG'||v.toUpperCase()==='DBUG'){$('guess-input').value='';dbgToggle();return;}
-  if(v.toUpperCase()==='NEXT'&&!skm&&ri===0&&wh.length===0){
+  if(v.toUpperCase()==='SKULLS'&&hskull&&mode!==2&&ri===0&&wh.length===0){
+    $('guess-input').value='';setMode(2);newGame();return;
+  }
+  if(v.toUpperCase()==='NEXT'&&mode===0&&ri===0&&wh.length===0){
     $('guess-input').value='';
     if(!hall){hall=true;localStorage.setItem('wt_won_all','1');$('skull-toggle').style.display='block';}
-    setSkull(true);newGame();return;
+    setMode(1);newGame();return;
   }
   if(go||res)return;
   if(v.length<wl){$('msg').textContent='Must be '+wl+' letters.';return;}
@@ -710,7 +825,15 @@ $('guess-btn').onclick=()=>{
 };
 $('guess-input').addEventListener('keydown',e=>{if(e.key==='Enter')$('guess-btn').click();});
 $('new-btn').onclick=newGame;
-$('skull-toggle').onclick=()=>{setSkull(!skm);newGame();};
+$('skull-toggle').onclick=()=>{
+  if(hskull){
+    // cycle: base->skull->skulls->base
+    setMode((mode+1)%3);
+  } else {
+    setMode(mode===0?1:0);
+  }
+  newGame();
+};
 $('collection-btn').onclick=openCollection;
 $('col-close').onclick=()=>$('col-overlay').classList.remove('show');
 $('col-overlay').onclick=e=>{if(e.target===$('col-overlay'))$('col-overlay').classList.remove('show');};
