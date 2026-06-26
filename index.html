@@ -269,6 +269,10 @@ const ANIMALS=[
   {id:'scorpion',emoji:'🦂',skullOnly:true,triggers:['SCORPION'],                  lens:[8]},
   {id:'werewolf',emoji:'🌕',skullOnly:true,triggers:['WEREWOLF'],                  lens:[8]},
   {id:'skeleton',emoji:'💀',skullOnly:true,triggers:['SKELETON'],                  lens:[8]},
+  {id:'fiend',  emoji:'😈',skullOnly:false,skullsOnly:true,triggers:['FIEND'],   lens:[5]},
+  {id:'plague', emoji:'🤢',skullOnly:false,skullsOnly:true,triggers:['PLAGUE'],  lens:[6]},
+  {id:'charon', emoji:'⛵',skullOnly:false,skullsOnly:true,triggers:['CHARON'],  lens:[6]},
+  {id:'inferno',emoji:'🔥',skullOnly:false,skullsOnly:true,triggers:['INFERNO'], lens:[7]},
 ];
 const WORD_TO_ANIMAL={};
 ANIMALS.forEach(a=>a.triggers.forEach(t=>WORD_TO_ANIMAL[t]=a.id));
@@ -278,6 +282,11 @@ const SKULL_EXTRAS={
   6:['DRAGON','KRAKEN','ZOMBIE','GOBLIN'],
   7:['PHANTOM','WARLOCK','VAMPIRE','MONSTER','SERPENT','BANSHEE'],
   8:['MINOTAUR','SCORPION','WEREWOLF','SKELETON','BASILISK'],
+};
+const SKULLS_EXTRAS={
+  5:['FIEND'],
+  6:['PLAGUE','CHARON'],
+  7:['INFERNO'],
 };
 
 const _w={
@@ -290,7 +299,7 @@ const _w={
 };
 
 const RL=[4,5,6,7,8,9,8,7,6,5,4],N=4,TR=128,GB=5000,EB=1000,PB=500,LB=100,SMB=2000,DSMB=5000,SK='💀',DSK='💀💀';
-const PITY_BASE=5,PITY_FAIL=0;
+const PITY_BASE=3,PITY_FAIL=0;
 const $=id=>document.getElementById(id);
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function isSk(v){return v===SK}
@@ -347,7 +356,7 @@ function updateSkullToggle(){
 // ── PITY ──────────────────────────────────────────────────────────────────────
 function setupPity(){
   pityRound=-1;pityWord=null;pityPenaltyApplied=false;
-  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm())&&(!a.skullsOnly||skms()));
   if(!pool.length||pityCounter>0)return;
   let animal=pool[rnd(0,pool.length-1)];
   let candidates=[];
@@ -372,7 +381,9 @@ function applyPityPenalty(){
 function checkAnimal(word){
   let id=WORD_TO_ANIMAL[word.toUpperCase()];if(!id)return null;
   let animal=ANIMALS.find(a=>a.id===id);
-  if(!animal||animal.skullOnly&&!skm())return null;
+  if(!animal)return null;
+  if(animal.skullsOnly&&!skms())return null;
+  if(animal.skullOnly&&!skm())return null;
   if(collected.includes(id))return null;
   return animal;
 }
@@ -387,9 +398,10 @@ function collectAnimal(animal){
 
 function openCollection(){
   let cg=$('col-grid');cg.innerHTML='';
-  let base=ANIMALS.filter(a=>!a.skullOnly);
-  let sk=ANIMALS.filter(a=>a.skullOnly&&(hall||collected.includes(a.id)));
-  let all=[...base,...sk];
+  let base=ANIMALS.filter(a=>!a.skullOnly&&!a.skullsOnly);
+  let sk=ANIMALS.filter(a=>a.skullOnly&&!a.skullsOnly&&(hall||collected.includes(a.id)));
+  let sks=ANIMALS.filter(a=>a.skullsOnly&&(hskull||collected.includes(a.id)));
+  let all=[...base,...sk,...sks];
   $('col-subtitle').textContent=collected.length+' / '+all.length+' discovered';
   all.forEach(a=>{
     let unlocked=collected.includes(a.id);
@@ -397,7 +409,7 @@ function openCollection(){
     d.className='col-cell'+(a.skullOnly?' skull-ex':'')+(unlocked?'':' locked');
     if(unlocked){d.textContent=a.emoji;d.title=a.triggers.join(' / ');}
     else{
-      d.innerHTML='<span style="font-size:18px;opacity:0.3">?</span><span class=col-hint>'+(a.skullOnly?'💀':'')+Math.min(...a.lens)+'</span>';
+      d.innerHTML='<span style="font-size:18px;opacity:0.3">?</span><span class=col-hint>'+(a.skullsOnly?'💀💀':a.skullOnly?'💀':'')+Math.min(...a.lens)+'</span>';
       d.title=a.skullOnly?'Skull Realm only':'';
     }
     cg.appendChild(d);
@@ -420,8 +432,9 @@ function pickW(len){
   if(pityRound===ri&&pityWord){uw.add(pityWord.toLowerCase());return pityWord;}
   let base=_w[len]?[..._w[len]]:[];
   let extras=skm()&&SKULL_EXTRAS[len]?SKULL_EXTRAS[len].map(w=>w.toLowerCase()):[];
-  let pool=[...base,...extras].filter(w=>!uw.has(w));
-  if(!pool.length){uw.clear();pool=[...base,...extras];}
+  let skulsExtras=skms()&&SKULLS_EXTRAS[len]?SKULLS_EXTRAS[len].map(w=>w.toLowerCase()):[];
+  let pool=[...base,...extras,...skulsExtras].filter(w=>!uw.has(w));
+  if(!pool.length){uw.clear();pool=[...base,...extras,...skulsExtras];}
   if(!pool.length){console.error('No words len '+len);return'ERROR';}
   let w=pool[rnd(0,pool.length-1)];uw.add(w);return w.toUpperCase();
 }
@@ -713,8 +726,8 @@ function shareResult(){
 
 function showEnd(won){
   go=true;applyPityPenalty();
-  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
-  if(pool.length){pityCounter=Math.max(0,pityCounter-1);savePity(pityCounter);}
+  let pool2=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm())&&(!a.skullsOnly||skms()));
+  if(pool2.length){pityCounter=Math.max(0,pityCounter-1);savePity(pityCounter);}
   if(mode>0){sc=Math.round(sc*multiplier());saveBest();}
   let cr=wh.length;
   let body=won?(mode===2?'You conquered Skulls Realm! 💀💀':mode===1?'You conquered Skull Realm!':'Incredible — you conquered all eleven rounds!')+'<br>'
@@ -767,13 +780,13 @@ function dbgFailRound(){if(go||res)return;failG('DEBUG');}
 function dbgFillBoard(){if(go||res)return;let v=2;for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(bd[r][c]===0){bd[r][c]=v;v=v===2?4:2;}}renderG();dbgR();}
 function dbgClearBoard(){if(go||res)return;for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(!isSp(bd[r][c]))bd[r][c]=0;}renderG();dbgR();}
 function dbgGiveAnimal(){
-  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm())&&(!a.skullsOnly||skms()));
   if(!pool.length){alert('All available animals collected!');return;}
   collectAnimal(pool[rnd(0,pool.length-1)]);dbgR();
 }
 function dbgAnimalRound(){
   if(go||res)return;
-  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm()));
+  let pool=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm())&&(!a.skullsOnly||skms()));
   if(!pool.length){alert('All available animals collected!');return;}
   let candidates=[];
   pool.forEach(a=>{
@@ -782,7 +795,8 @@ function dbgAnimalRound(){
         let w=t.toLowerCase();
         let inBase=_w[len]&&_w[len].includes(w);
         let inExtra=skm()&&SKULL_EXTRAS[len]&&SKULL_EXTRAS[len].map(x=>x.toLowerCase()).includes(w);
-        if(inBase||inExtra)candidates.push({word:t.toUpperCase(),idx,len});
+        let inSkulsExtra=skms()&&SKULLS_EXTRAS[len]&&SKULLS_EXTRAS[len].map(x=>x.toLowerCase()).includes(w);
+        if(inBase||inExtra||inSkulsExtra)candidates.push({word:t.toUpperCase(),idx,len});
       });
     });
   });
