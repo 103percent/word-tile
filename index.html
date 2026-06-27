@@ -312,8 +312,8 @@ function lOff(a,b){if(a.length!==b.length)return Infinity;let n=0;for(let i=0;i<
 const COL_VERSION=1;
 function loadCol(){try{let r=localStorage.getItem('wt_col');if(!r)return[];let p=JSON.parse(r);if(p&&!Array.isArray(p)&&p.v===COL_VERSION)return Array.isArray(p.ids)?p.ids:[];if(Array.isArray(p)){saveCol(p);return p;}return[];}catch{return[];}}
 function saveCol(ids){localStorage.setItem('wt_col',JSON.stringify({v:COL_VERSION,ids}));}
-function loadPity(){return parseInt(localStorage.getItem('wt_pity')||String(PITY_BASE));}
-function savePity(n){localStorage.setItem('wt_pity',String(n));}
+function loadPity(){return 0;}
+function savePity(n){}
 
 let collected=loadCol();
 let pityCounter=loadPity(),pityRound=-1,pityWord=null,pityPenaltyApplied=false;
@@ -371,11 +371,7 @@ function setupPity(){
   if(candidates.length){let pick=candidates[rnd(0,candidates.length-1)];pityRound=pick.idx;pityWord=pick.word;}
 }
 
-function applyPityPenalty(){
-  if(pityPenaltyApplied)return;
-  if(pityRound>=0&&pityWord&&!collected.includes(WORD_TO_ANIMAL[pityWord])){pityCounter=PITY_FAIL;savePity(pityCounter);}
-  pityPenaltyApplied=true;
-}
+function applyPityPenalty(){pityPenaltyApplied=true;}
 
 // ── ANIMAL HELPERS ────────────────────────────────────────────────────────────
 function checkAnimal(word){
@@ -391,8 +387,7 @@ function checkAnimal(word){
 function collectAnimal(animal){
   try{
     collected.push(animal.id);saveCol(collected);
-    pityCounter=PITY_BASE;savePity(pityCounter);pityPenaltyApplied=true;
-    $('collection-btn').style.display='block';
+    pityCounter=PITY_BASE;savePity(pityCounter);pityPenaltyApplied=true;    $('collection-btn').style.display='block';
     let t=$('animal-toast');
     t.textContent=(animal.emoji||'?')+' New: '+animal.triggers[0]+'!';
     t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);
@@ -730,8 +725,7 @@ function shareResult(){
 function showEnd(won){
   go=true;applyPityPenalty();
   let pool2=ANIMALS.filter(a=>!collected.includes(a.id)&&(!a.skullOnly||skm())&&(!a.skullsOnly||skms()));
-  if(pool2.length){pityCounter=Math.max(0,pityCounter-1);savePity(pityCounter);}
-  if(mode>0){sc=Math.round(sc*multiplier());saveBest();}
+  if(pool2.length){pityCounter=Math.max(0,pityCounter-1);savePity(pityCounter);}  if(mode>0){sc=Math.round(sc*multiplier());saveBest();}
   let cr=wh.length;
   let body=won?(mode===2?'You conquered Skulls Realm! 💀💀':mode===1?'You conquered Skull Realm!':'Incredible — you conquered all eleven rounds!')+'<br>'
     :'You guessed <strong>'+wh[wh.length-1].guess+'</strong> — the word was <strong>'+wd+'</strong>.<br>';
@@ -775,7 +769,7 @@ function dbgR(){
     'mask: <b>'+lm.map((v,i)=>v?wd[i]:'_').join('')+'</b> \xb7 revealed: <b>'+lm.filter(v=>v).length+'/'+wl+'</b><br>'+
     'score: <b>'+sc+'</b> \xb7 best: <b>'+best+'</b><br>'+
     'empty: <b>'+emp+'</b> \xb7 skulls: <b>'+sks+'</b> \xb7 dskulls: <b>'+dsks+'</b> \xb7 res: <b>'+res+'</b> \xb7 go: <b>'+go+'</b> \xb7 mode: <b>'+mode+'</b><br>'+
-    'collected: <b>'+collected.length+'/50</b> \xb7 pity: <b>'+pityCounter+'</b> \xb7 pityRound: <b>'+pityRound+'</b> \xb7 pityWord: <b>'+(pityWord||'\u2014')+'</b>';
+    'collected: <b>'+collected.length+'/54</b> \xb7 pityRound: <b>'+pityRound+'</b> \xb7 pityWord: <b>'+(pityWord||'\u2014')+'</b>';
 }
 function dbgRevealLetter(){if(go||res)return;let ch=revNext();if(ch){renderG();updWP();if(allRev()){res=true;setTimeout(()=>completeR('auto'),400);}}dbgR();}
 function dbgCompleteRound(){if(go||res)return;while(lm.some(v=>!v))revNext();updWP();res=true;setTimeout(()=>{completeR('auto');dbgR();},200);}
